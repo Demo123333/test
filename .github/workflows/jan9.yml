@@ -24,8 +24,8 @@ jobs:
       - name: Freeze Jan 8 DATE_CODE
         id: set
         run: |
-          DATE_CODE="20260108"
-          DAYS_AHEAD=5
+          DATE_CODE="20260109"
+          DAYS_AHEAD=0
 
           echo "Running hourly for Jan 8, 2026"
           echo "DATE_CODE=$DATE_CODE"
