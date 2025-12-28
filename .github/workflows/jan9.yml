@@ -3,7 +3,7 @@ name: BMS Jan 8 Hourly Tracker
 on:
   workflow_dispatch:
   schedule:
-    # Every hour UTC (mapped to IST internally)
+    # Every hour UTC
     - cron: "0 * * * *"
 
 permissions:
@@ -11,39 +11,9 @@ permissions:
 
 jobs:
 # =====================================================
-# 0️⃣ Date Gate – ONLY Jan 8, 2026 (IST)
-# =====================================================
-  date-gate:
-    runs-on: ubuntu-latest
-    outputs:
-      allowed: ${{ steps.check.outputs.allowed }}
-
-    steps:
-      - name: Check Jan 8 window (IST)
-        id: check
-        run: |
-          TODAY=$(TZ=Asia/Kolkata date +%Y-%m-%d)
-          TARGET_DATE="2026-01-08"
-
-          HOUR=$(TZ=Asia/Kolkata date +%H)
-
-          echo "Today (IST): $TODAY"
-          echo "Hour  (IST): $HOUR"
-
-          if [[ "$TODAY" == "$TARGET_DATE" ]]; then
-            echo "✅ Jan 8 detected → allowed"
-            echo "allowed=true" >> $GITHUB_OUTPUT
-          else
-            echo "❌ Not Jan 8 → blocked"
-            echo "allowed=false" >> $GITHUB_OUTPUT
-          fi
-
-# =====================================================
 # 1️⃣ Decide DATE_CODE (FIXED = Jan 8)
 # =====================================================
   decide-day:
-    needs: date-gate
-    if: needs.date-gate.outputs.allowed == 'true'
     runs-on: ubuntu-latest
 
     outputs:
@@ -55,7 +25,7 @@ jobs:
         id: set
         run: |
           DATE_CODE="20260108"
-          DAYS_AHEAD=0
+          DAYS_AHEAD=5
 
           echo "Running hourly for Jan 8, 2026"
           echo "DATE_CODE=$DATE_CODE"
