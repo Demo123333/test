@@ -13,114 +13,47 @@ jobs:
 # =====================================================
 # 1️⃣ Decide DATE_CODE (FIXED = Jan 8)
 # =====================================================
-  decide-day:
-    runs-on: ubuntu-latest
+ combine:
+  needs: [decide-day, shards]
+  runs-on: ubuntu-latest
+  timeout-minutes: 30
 
-    outputs:
-      days_ahead: ${{ steps.set.outputs.days_ahead }}
-      date_code:  ${{ steps.set.outputs.date_code }}
+  steps:
+    - name: 🧾 Checkout repo
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        persist-credentials: true
 
-    steps:
-      - name: Freeze Jan 8 DATE_CODE
-        id: set
-        run: |
-          DATE_CODE="20260108"
-          DAYS_AHEAD=5
+    - name: 🔄 Sync main
+      run: |
+        git fetch origin
+        git reset --hard origin/main
 
-          echo "Running hourly for Jan 8, 2026"
-          echo "DATE_CODE=$DATE_CODE"
+    - name: 🐍 Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.11"
 
-          echo "days_ahead=$DAYS_AHEAD" >> $GITHUB_OUTPUT
-          echo "date_code=$DATE_CODE"   >> $GITHUB_OUTPUT
+    # ✅ FIX
+    - name: 📦 Install combiner deps
+      run: |
+        pip install pytz
 
-# =====================================================
-# 2️⃣ Run ALL shards in parallel (Hourly)
-# =====================================================
-  shards:
-    name: Shard ${{ matrix.shard }}
-    needs: decide-day
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
+    - name: 🔗 Combine JSONs
+      run: |
+        python combine_shards_rotate.py
+      env:
+        DATE_CODE: ${{ needs.decide-day.outputs.date_code }}
 
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: [1,2,3,4,5,6,7,8,9]
-
-    steps:
-      - name: 🧾 Checkout repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          persist-credentials: true
-
-      - name: 🐍 Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: 📦 Install dependencies
-        run: |
-          pip install cloudscraper aiohttp pytz selenium webdriver-manager
-
-      - name: 🚀 Run shard scraper
-        run: |
-          python bmsrotate${{ matrix.shard }}.py
-        env:
-          DAYS_AHEAD: ${{ needs.decide-day.outputs.days_ahead }}
-          DATE_CODE:  ${{ needs.decide-day.outputs.date_code }}
-
-      - name: 💾 Commit shard output
-        run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add advance/data/${{ needs.decide-day.outputs.date_code }}/
-          git commit -m "Jan 8 hourly shard ${{ matrix.shard }}" || echo "No changes"
-          for i in 1 2 3; do
-            git pull --rebase origin main || true
-            git push origin main && break
-            sleep 3
-          done
-
-# =====================================================
-# 3️⃣ Combine shards (EVERY HOUR)
-# =====================================================
-  combine:
-    needs: [decide-day, shards]
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    steps:
-      - name: 🧾 Checkout repo
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          persist-credentials: true
-
-      - name: 🔄 Sync main
-        run: |
-          git fetch origin
-          git reset --hard origin/main
-
-      - name: 🐍 Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: 🔗 Combine JSONs
-        run: |
-          python combine_shards_rotate.py
-        env:
-          DATE_CODE: ${{ needs.decide-day.outputs.date_code }}
-
-      - name: 💾 Commit final output
-        run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-          git add advance/data/${{ needs.decide-day.outputs.date_code }}/final*
-          git commit -m "Jan 8 hourly final combine" || echo "No changes"
-          for i in 1 2 3; do
-            git pull --rebase origin main || true
-            git push origin main && break
-            sleep 3
-          done
+    - name: 💾 Commit final output
+      run: |
+        git config user.name "github-actions"
+        git config user.email "actions@github.com"
+        git add advance/data/${{ needs.decide-day.outputs.date_code }}/final*
+        git commit -m "Jan 8 hourly final combine" || echo "No changes"
+        for i in 1 2 3; do
+          git pull --rebase origin main || true
+          git push origin main && break
+          sleep 3
+        done
