@@ -38,12 +38,22 @@ def calc_occupancy(sold, total):
     return round((sold / total) * 100, 2) if total else 0.0
 
 # =====================================================
-# NORMALIZE ROW
+# NORMALIZE ROW (CASE-SAFE CITY)
 # =====================================================
 def normalize_row(r):
     r["movie"] = r.get("movie") or "Unknown"
-    r["city"] = r.get("city") or "Unknown"
-    r["state"] = r.get("state") or "Unknown"
+
+    raw_city  = r.get("city") or "Unknown"
+    raw_state = r.get("state") or "Unknown"
+
+    # 🔑 grouping keys (ignore case & spaces)
+    r["_city_key"]  = raw_city.strip().lower()
+    r["_state_key"] = raw_state.strip().lower()
+
+    # 👀 display values
+    r["city"]  = raw_city.strip().title()
+    r["state"] = raw_state.strip().title()
+
     r["venue"] = r.get("venue") or "Unknown"
     r["address"] = r.get("address") or ""
     r["time"] = r.get("time") or ""
@@ -52,8 +62,8 @@ def normalize_row(r):
     r["source"] = r.get("source") or "Unknown"
     r["date"] = r.get("date") or DATE_CODE
 
-    r["language"] = r.get("language") or "UNKNOWN"
-    r["dimension"] = r.get("dimension") or "UNKNOWN"
+    r["language"] = (r.get("language") or "UNKNOWN").upper()
+    r["dimension"] = (r.get("dimension") or "UNKNOWN").upper()
 
     r["totalSeats"] = int(r.get("totalSeats") or 0)
     r["available"] = int(r.get("available") or 0)
@@ -124,15 +134,19 @@ save_json(
 print("🎉 finaldetailed.json saved")
 
 # =====================================================
-# BUILD FINAL SUMMARY (NO CHAIN)
+# BUILD FINAL SUMMARY (CITY IGNORE CASE)
 # =====================================================
 summary = {}
 
 for r in final_rows:
     movie = r["movie"]
+    venue = r["venue"]
+
+    city_key  = r["_city_key"]
+    state_key = r["_state_key"]
+
     city  = r["city"]
     state = r["state"]
-    venue = r["venue"]
     lang  = r["language"]
     dim   = r["dimension"]
 
@@ -162,15 +176,15 @@ for r in final_rows:
     m["sold"] += sold
     m["totalSeats"] += total
     m["venues"].add(venue)
-    m["cities"].add(city)
+    m["cities"].add(city_key)
 
     if occ >= 98:
         m["housefull"] += 1
     elif occ >= 50:
         m["fastfilling"] += 1
 
-    # -------- CITY --------
-    ck = (city, state)
+    # -------- CITY (IGNORE CASE) --------
+    ck = (city_key, state_key)
     if ck not in m["City_details"]:
         m["City_details"][ck] = {
             "city": city,
@@ -190,6 +204,7 @@ for r in final_rows:
     d["gross"] += gross
     d["sold"] += sold
     d["totalSeats"] += total
+
     if occ >= 98:
         d["housefull"] += 1
     elif occ >= 50:
@@ -214,6 +229,7 @@ for r in final_rows:
     L["gross"] += gross
     L["sold"] += sold
     L["totalSeats"] += total
+
     if occ >= 98:
         L["housefull"] += 1
     elif occ >= 50:
@@ -238,6 +254,7 @@ for r in final_rows:
     F["gross"] += gross
     F["sold"] += sold
     F["totalSeats"] += total
+
     if occ >= 98:
         F["housefull"] += 1
     elif occ >= 50:
