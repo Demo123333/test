@@ -26,7 +26,6 @@ DETAILED_FILE = f"{BASE_DIR}/detailed{SHARD_ID}.json"
 SUMMARY_FILE  = f"{BASE_DIR}/movie_summary{SHARD_ID}.json"
 LOG_FILE      = f"{LOG_DIR}/district{SHARD_ID}.log"
 
-
 API_URL = (
     "https://www.district.in/gw/consumer/movies/v3/cinema"
     "?meta=1&reqData=1&version=3"
@@ -36,11 +35,10 @@ API_URL = (
     "&date={date}"
 )
 
-
 HEADERS = {
     "accept": "application/json",
-    "x-device-id":"945e8082-a763-4302-9508-2fd3f5dbb404",
-    "x-access-token": "1766761850603884769_6215138833624750724_65db173408bbff8e6314d934566b5ba9e698a994cd8136ee590a1b5245d1501c",
+    "x-device-id": "945e8082-a763-4302-9508-2fd3f5dbb404",
+    "x-guest-token": "1757103021647119385_7875787567527143057_dae9c31687b879e416698dae45db6331d57b79c887d37fd063e09836d3f08c24",
     "x-app-type": "ed_mweb",
     "api_source": "district",
     "user-agent": (
@@ -50,7 +48,6 @@ HEADERS = {
     ),
     "referer": "https://www.district.in/"
 }
-     
 
 # =====================================================
 # LOGGING
@@ -63,7 +60,7 @@ def log(msg):
         f.write(line + "\n")
 
 # =====================================================
-# LOAD DISTRICT VENUES
+# LOAD VENUES
 # =====================================================
 with open("districtvenues.json", "r", encoding="utf-8") as f:
     DIST_VENUES = json.load(f)
@@ -73,33 +70,22 @@ log(f"📍 Loaded {len(DIST_VENUES)} district venues")
 # =====================================================
 # HELPERS
 # =====================================================
-def format_state(s):
-    if not s:
-        return "Unknown"
-    return " ".join(w.capitalize() for w in s.replace("-", " ").split())
-
-def format_chain(s):
-    if not s:
-        return "Unknown"
-    return " ".join(w.capitalize() for w in s.replace("-", " ").split())
+def calc_occupancy(sold, total):
+    return round((sold / total) * 100, 2) if total else 0.0
 
 def dedupe(rows):
     seen = set()
     out = []
-
     for r in rows:
-        key = (
-            r.get("venue", ""),
-            r.get("time", ""),
-            r.get("session_id", ""),
-            r.get("audi", ""),
-        )
+        key = (r["venue"], r["time"], r["session_id"], r["audi"])
         if key in seen:
             continue
         seen.add(key)
         out.append(r)
-
     return out
+
+def norm(s):
+    return s.strip() if s else "UNKNOWN"
 
 # =====================================================
 # FETCH SINGLE VENUE
@@ -109,49 +95,41 @@ async def fetch_one(session, venue):
     url = API_URL.format(cid=cid, date=DATE_DISTRICT)
 
     try:
-        async with session.get(url, headers= HEADERS) as resp:
+        async with session.get(url, headers=HEADERS) as resp:
             if resp.status != 200:
-                log(f"⚠ {cid} status {resp.status} {resp.reason}")
+                log(f"⚠ {cid} status {resp.status}")
                 return None
-
             data = await resp.json()
-            session_dates = data.get("data", {}).get("sessionDates", [])
-
-            # ---- DATE SKIP ----
-            if DATE_DISTRICT not in session_dates:
+            if DATE_DISTRICT not in data.get("data", {}).get("sessionDates", []):
                 return None
-
             return {"venue": venue, "data": data}
-
     except Exception as e:
         log(f"❌ {cid} {type(e).__name__}")
         return None
 
 # =====================================================
-# FETCH ALL (ASYNC)
+# FETCH ALL
 # =====================================================
 async def fetch_all():
     sem = asyncio.Semaphore(CONCURRENCY)
-    results = []
+    out = []
 
     async with aiohttp.ClientSession(timeout=TIMEOUT) as session:
-
         async def bound(v):
             async with sem:
                 return await fetch_one(session, v)
 
-        tasks = [bound(v) for v in DIST_VENUES]
-        raw = await asyncio.gather(*tasks)
+        results = await asyncio.gather(*(bound(v) for v in DIST_VENUES))
 
-    for r in raw:
+    for r in results:
         if r:
-            results.append(r)
+            out.append(r)
 
-    log(f"✅ Fetched {len(results)} venues with shows")
-    return results
+    log(f"✅ Fetched {len(out)} venues with shows")
+    return out
 
 # =====================================================
-# PARSE DATA
+# PARSE
 # =====================================================
 def parse(results):
     detailed = []
@@ -160,65 +138,39 @@ def parse(results):
         venue_meta = res["venue"]
         data = res["data"]
 
-        city = venue_meta.get("city") or "Unknown"
-        state = format_state(venue_meta.get("state"))
+        city  = venue_meta.get("city", "Unknown")
+        state = venue_meta.get("state", "Unknown")
 
         cinema = data.get("meta", {}).get("cinema", {})
+        venue_name = cinema.get("name") or venue_meta.get("name") or "Unknown"
+        venue_addr = cinema.get("address") or venue_meta.get("address") or ""
 
-        venue_name = (
-            cinema.get("name")
-            or venue_meta.get("name")
-            or venue_meta.get("district_name")
-            or "Unknown"
-        )
-
-        venue_addr = (
-            cinema.get("address")
-            or venue_meta.get("address")
-            or ""
-        )
-
-        chain = format_chain(
-            venue_meta.get("chainKey")
-            or venue_meta.get("chain")
-            or venue_name
-        )
-
-        movies = data.get("meta", {}).get("movies", []) or []
         movie_map = {}
-        for m in movies:
+        for m in data.get("meta", {}).get("movies", []) or []:
             movie_map[m.get("id")] = m
             movie_map[str(m.get("id"))] = m
 
         for s in data.get("pageData", {}).get("sessions", []) or []:
-            mid = s.get("mid")
-            movie = movie_map.get(mid) or movie_map.get(str(mid))
+            movie = movie_map.get(s.get("mid")) or movie_map.get(str(s.get("mid")))
             if not movie:
                 continue
 
             name = movie.get("name", "Unknown")
-            lang = s.get("lang") or movie.get("lang") or ""
-            fmt = s.get("scrnFmt") or ""
-            fmt = fmt.replace("-", " | ") if fmt else ""
+            lang = norm(s.get("lang") or movie.get("lang"))
+            fmt  = norm(s.get("scrnFmt")).replace("-", " | ")
 
-            movie_key = (
-                f"{name} [{fmt} | {lang}]"
-                if fmt else f"{name} | {lang}"
-            )
 
             total = int(s.get("total", 0))
             avail = int(s.get("avail", 0))
-            sold = total - avail
+            sold  = total - avail
 
             gross = sum(
                 (a.get("sTotal", 0) - a.get("sAvail", 0)) * a.get("price", 0)
                 for a in s.get("areas", []) or []
             )
 
-            occ = (sold / total * 100) if total else 0
-
             detailed.append({
-                "movie": movie_key,
+                "movie": name,
                 "city": city,
                 "state": state,
                 "venue": venue_name,
@@ -236,31 +188,32 @@ def parse(results):
                 "available": avail,
                 "sold": sold,
                 "gross": round(gross, 2),
-                "occupancy": f"{round(occ, 2)}%",
+                "language": lang,
+                "dimension": fmt,
                 "source": "District",
-                "date": DATE_CODE,
-                "chain": chain
+                "date": DATE_CODE
             })
 
     return dedupe(detailed)
 
 # =====================================================
-# BUILD SUMMARY
+# BUILD SUMMARY (NO CHAIN)
 # =====================================================
 def build_summary(detailed):
     summary = {}
 
     for r in detailed:
         movie = r["movie"]
-        city = r["city"]
+        city  = r["city"]
         state = r["state"]
         venue = r["venue"]
-        chain = r["chain"]
+        lang  = r["language"]
+        dim   = r["dimension"]
 
         total = r["totalSeats"]
-        sold = r["sold"]
+        sold  = r["sold"]
         gross = r["gross"]
-        occ = (sold / total * 100) if total else 0
+        occ   = calc_occupancy(sold, total)
 
         if movie not in summary:
             summary[movie] = {
@@ -273,7 +226,8 @@ def build_summary(detailed):
                 "fastfilling": 0,
                 "housefull": 0,
                 "details": {},
-                "Chain_details": {}
+                "Language_details": {},
+                "Format_details": {}
             }
 
         m = summary[movie]
@@ -289,6 +243,7 @@ def build_summary(detailed):
         elif occ >= 50:
             m["fastfilling"] += 1
 
+        # -------- CITY --------
         ck = (city, state)
         if ck not in m["details"]:
             m["details"][ck] = {
@@ -314,9 +269,10 @@ def build_summary(detailed):
         elif occ >= 50:
             d["fastfilling"] += 1
 
-        if chain not in m["Chain_details"]:
-            m["Chain_details"][chain] = {
-                "chain": chain,
+        # -------- LANGUAGE --------
+        if lang not in m["Language_details"]:
+            m["Language_details"][lang] = {
+                "language": lang,
                 "venues": set(),
                 "shows": 0,
                 "gross": 0.0,
@@ -326,16 +282,40 @@ def build_summary(detailed):
                 "housefull": 0
             }
 
-        c = m["Chain_details"][chain]
-        c["venues"].add(venue)
-        c["shows"] += 1
-        c["gross"] += gross
-        c["sold"] += sold
-        c["totalSeats"] += total
+        L = m["Language_details"][lang]
+        L["venues"].add(venue)
+        L["shows"] += 1
+        L["gross"] += gross
+        L["sold"] += sold
+        L["totalSeats"] += total
         if occ >= 98:
-            c["housefull"] += 1
+            L["housefull"] += 1
         elif occ >= 50:
-            c["fastfilling"] += 1
+            L["fastfilling"] += 1
+
+        # -------- FORMAT --------
+        if dim not in m["Format_details"]:
+            m["Format_details"][dim] = {
+                "dimension": dim,
+                "venues": set(),
+                "shows": 0,
+                "gross": 0.0,
+                "sold": 0,
+                "totalSeats": 0,
+                "fastfilling": 0,
+                "housefull": 0
+            }
+
+        F = m["Format_details"][dim]
+        F["venues"].add(venue)
+        F["shows"] += 1
+        F["gross"] += gross
+        F["sold"] += sold
+        F["totalSeats"] += total
+        if occ >= 98:
+            F["housefull"] += 1
+        elif occ >= 50:
+            F["fastfilling"] += 1
 
     final = {}
     for movie, m in summary.items():
@@ -348,13 +328,14 @@ def build_summary(detailed):
             "cities": len(m["cities"]),
             "fastfilling": m["fastfilling"],
             "housefull": m["housefull"],
-            "occupancy": round((m["sold"] / m["totalSeats"]) * 100, 2) if m["totalSeats"] else 0.0,
-            "details": [],
-            "Chain_details": []
+            "occupancy": calc_occupancy(m["sold"], m["totalSeats"]),
+            "City_details": [],
+            "Language_details": [],
+            "Format_details": []
         }
 
         for d in m["details"].values():
-            final[movie]["details"].append({
+            final[movie]["City_details"].append({
                 "city": d["city"],
                 "state": d["state"],
                 "venues": len(d["venues"]),
@@ -364,20 +345,33 @@ def build_summary(detailed):
                 "totalSeats": d["totalSeats"],
                 "fastfilling": d["fastfilling"],
                 "housefull": d["housefull"],
-                "occupancy": round((d["sold"] / d["totalSeats"]) * 100, 2) if d["totalSeats"] else 0.0
+                "occupancy": calc_occupancy(d["sold"], d["totalSeats"])
             })
 
-        for c in m["Chain_details"].values():
-            final[movie]["Chain_details"].append({
-                "chain": c["chain"],
-                "venues": len(c["venues"]),
-                "shows": c["shows"],
-                "gross": round(c["gross"], 2),
-                "sold": c["sold"],
-                "totalSeats": c["totalSeats"],
-                "fastfilling": c["fastfilling"],
-                "housefull": c["housefull"],
-                "occupancy": round((c["sold"] / c["totalSeats"]) * 100, 2) if c["totalSeats"] else 0.0
+        for l in m["Language_details"].values():
+            final[movie]["Language_details"].append({
+                "language": l["language"],
+                "venues": len(l["venues"]),
+                "shows": l["shows"],
+                "gross": round(l["gross"], 2),
+                "sold": l["sold"],
+                "totalSeats": l["totalSeats"],
+                "fastfilling": l["fastfilling"],
+                "housefull": l["housefull"],
+                "occupancy": calc_occupancy(l["sold"], l["totalSeats"])
+            })
+
+        for f in m["Format_details"].values():
+            final[movie]["Format_details"].append({
+                "dimension": f["dimension"],
+                "venues": len(f["venues"]),
+                "shows": f["shows"],
+                "gross": round(f["gross"], 2),
+                "sold": f["sold"],
+                "totalSeats": f["totalSeats"],
+                "fastfilling": f["fastfilling"],
+                "housefull": f["housefull"],
+                "occupancy": calc_occupancy(f["sold"], f["totalSeats"])
             })
 
     return final
