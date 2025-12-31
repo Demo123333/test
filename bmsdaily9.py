@@ -102,7 +102,7 @@ async def fetch_one(session, venue):
     try:
         async with session.get(url, headers=HEADERS) as resp:
             if resp.status != 200:
-                log(f"⚠ {cid} status {resp.status} {resp}")
+                log(f"⚠ {cid} status {resp.status}")
                 return None
             data = await resp.json()
             if DATE_DISTRICT not in data.get("data", {}).get("sessionDates", []):

@@ -39,28 +39,44 @@ def log(msg):
         f.write(line + "\n")
 
 # =====================================================
+# HELPERS
+# =====================================================
+def calc_occupancy(sold, total):
+    return round((sold / total) * 100, 2) if total else 0.0
+
+# =====================================================
 # HARD TIMEOUT
 # =====================================================
 class TimeoutError(Exception):
     pass
 
-def _timeout_handler(signum, frame):
-    raise TimeoutError("Hard timeout hit")
-
 def hard_timeout(seconds):
-    def deco(fn):
+    def decorator(fn):
         def wrapper(*args, **kwargs):
-            signal.signal(signal.SIGALRM, _timeout_handler)
-            signal.alarm(seconds)
-            try:
-                return fn(*args, **kwargs)
-            finally:
-                signal.alarm(0)
+            result = {}
+            error = {}
+
+            def target():
+                try:
+                    result["value"] = fn(*args, **kwargs)
+                except Exception as e:
+                    error["err"] = e
+
+            t = threading.Thread(target=target, daemon=True)
+            t.start()
+            t.join(seconds)
+
+            if t.is_alive():
+                raise TimeoutError("Hard timeout hit")
+            if "err" in error:
+                raise error["err"]
+
+            return result.get("value")
         return wrapper
-    return deco
+    return decorator
 
 # =====================================================
-# USER AGENTS
+# USER AGENTS / IDENTITY
 # =====================================================
 USER_AGENTS = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
@@ -133,14 +149,11 @@ def parse_payload(data):
         title = ev.get("EventTitle", "Unknown")
 
         for ch in ev.get("ChildEvents", []):
-            dim  = ch.get("EventDimension", "").strip()
-            lang = ch.get("EventLanguage", "").strip()
-            suffix = " | ".join(x for x in (dim, lang) if x)
-            movie = f"{title} [{suffix}]" if suffix else title
+            dim  = ch.get("EventDimension", "").strip() or "UNKNOWN"
+            lang = ch.get("EventLanguage", "").strip() or "UNKNOWN"
 
             for sh in ch.get("ShowTimes", []):
-                show_date = sh.get("ShowDateCode")
-                if show_date != DATE_CODE:
+                if sh.get("ShowDateCode") != DATE_CODE:
                     continue
 
                 total = sold = avail = gross = 0
@@ -154,9 +167,11 @@ def parse_payload(data):
                     gross += (seats - free) * price
 
                 out.append({
-                    "movie": movie,
+                    "movie": title,
                     "venue": venue_name,
                     "address": venue_add,
+                    "language": lang,
+                    "dimension": dim,
                     "chain": chain,
                     "time": sh.get("ShowTime", ""),
                     "audi": sh.get("Attributes", "") or "",
@@ -176,12 +191,7 @@ def dedupe(rows):
     seen = set()
     out = []
     for r in rows:
-        key = (
-            r["venue"],
-            r["time"],
-            r["session_id"],
-            r["audi"]
-        )
+        key = (r["venue"], r["time"], r["session_id"], r["audi"])
         if key in seen:
             continue
         seen.add(key)
@@ -198,7 +208,6 @@ if __name__ == "__main__":
         venues = json.load(f)
 
     all_rows = []
-    retry = set()
 
     for i, vcode in enumerate(venues, 1):
         log(f"[{i}/{len(venues)}] {vcode}")
@@ -212,16 +221,14 @@ if __name__ == "__main__":
                 r["date"] = DATE_CODE
             all_rows.extend(rows)
         except Exception as e:
-            retry.add(vcode)
             reset_identity()
             log(f"❌ {vcode} | {type(e).__name__}")
         time.sleep(random.uniform(0.35, 0.7))
 
-    log("🧹 Deduping shows")
     detailed = dedupe(all_rows)
 
     # =====================================================
-    # SUMMARY (AFTER DEDUPE)
+    # SUMMARY
     # =====================================================
     summary = {}
 
@@ -230,25 +237,22 @@ if __name__ == "__main__":
         city  = r["city"]
         state = r["state"]
         venue = r["venue"]
-        chain = r["chain"]
+        lang  = r["language"]
+        dim   = r["dimension"]
 
         total = r["totalSeats"]
         sold  = r["sold"]
         gross = r["gross"]
-        occ   = (sold / total * 100) if total else 0
+        occ   = calc_occupancy(sold, total)
 
         if movie not in summary:
             summary[movie] = {
-                "shows": 0,
-                "gross": 0.0,
-                "sold": 0,
-                "totalSeats": 0,
-                "venues": set(),
-                "cities": set(),
-                "fastfilling": 0,
-                "housefull": 0,
+                "shows": 0, "gross": 0.0, "sold": 0, "totalSeats": 0,
+                "venues": set(), "cities": set(),
+                "fastfilling": 0, "housefull": 0,
                 "details": {},
-                "Chain_details": {}
+                "Language_details": {},
+                "Format_details": {}
             }
 
         m = summary[movie]
@@ -259,54 +263,66 @@ if __name__ == "__main__":
         m["venues"].add(venue)
         m["cities"].add(city)
 
-        if occ >= 98:
-            m["housefull"] += 1
-        elif occ >= 50:
-            m["fastfilling"] += 1
+        if occ >= 98: m["housefull"] += 1
+        elif occ >= 50: m["fastfilling"] += 1
 
+        # -------- CITY --------
         ck = (city, state)
         if ck not in m["details"]:
             m["details"][ck] = {
                 "city": city, "state": state,
-                "venues": set(),
-                "shows": 0, "gross": 0.0,
-                "sold": 0, "totalSeats": 0,
+                "venues": set(), "shows": 0,
+                "gross": 0.0, "sold": 0,
+                "totalSeats": 0,
                 "fastfilling": 0, "housefull": 0
             }
-
         d = m["details"][ck]
         d["venues"].add(venue)
         d["shows"] += 1
         d["gross"] += gross
         d["sold"] += sold
         d["totalSeats"] += total
-        if occ >= 98:
-            d["housefull"] += 1
-        elif occ >= 50:
-            d["fastfilling"] += 1
+        if occ >= 98: d["housefull"] += 1
+        elif occ >= 50: d["fastfilling"] += 1
 
-        if chain not in m["Chain_details"]:
-            m["Chain_details"][chain] = {
-                "chain": chain,
-                "venues": set(),
-                "shows": 0, "gross": 0.0,
-                "sold": 0, "totalSeats": 0,
+        # -------- LANGUAGE --------
+        if lang not in m["Language_details"]:
+            m["Language_details"][lang] = {
+                "language": lang,
+                "venues": set(), "shows": 0,
+                "gross": 0.0, "sold": 0,
+                "totalSeats": 0,
                 "fastfilling": 0, "housefull": 0
             }
+        L = m["Language_details"][lang]
+        L["venues"].add(venue)
+        L["shows"] += 1
+        L["gross"] += gross
+        L["sold"] += sold
+        L["totalSeats"] += total
+        if occ >= 98: L["housefull"] += 1
+        elif occ >= 50: L["fastfilling"] += 1
 
-        c = m["Chain_details"][chain]
-        c["venues"].add(venue)
-        c["shows"] += 1
-        c["gross"] += gross
-        c["sold"] += sold
-        c["totalSeats"] += total
-        if occ >= 98:
-            c["housefull"] += 1
-        elif occ >= 50:
-            c["fastfilling"] += 1
+        # -------- FORMAT --------
+        if dim not in m["Format_details"]:
+            m["Format_details"][dim] = {
+                "dimension": dim,
+                "venues": set(), "shows": 0,
+                "gross": 0.0, "sold": 0,
+                "totalSeats": 0,
+                "fastfilling": 0, "housefull": 0
+            }
+        F = m["Format_details"][dim]
+        F["venues"].add(venue)
+        F["shows"] += 1
+        F["gross"] += gross
+        F["sold"] += sold
+        F["totalSeats"] += total
+        if occ >= 98: F["housefull"] += 1
+        elif occ >= 50: F["fastfilling"] += 1
 
     # =====================================================
-    # FINALIZE SUMMARY
+    # FINAL SUMMARY
     # =====================================================
     final_summary = {}
 
@@ -320,13 +336,14 @@ if __name__ == "__main__":
             "cities": len(m["cities"]),
             "fastfilling": m["fastfilling"],
             "housefull": m["housefull"],
-            "occupancy": round((m["sold"] / m["totalSeats"]) * 100, 2) if m["totalSeats"] else 0.0,
-            "details": [],
-            "Chain_details": []
+            "occupancy": calc_occupancy(m["sold"], m["totalSeats"]),
+            "City_details": [],
+            "Language_details": [],
+            "Format_details": []
         }
 
         for d in m["details"].values():
-            final_summary[movie]["details"].append({
+            final_summary[movie]["City_details"].append({
                 "city": d["city"],
                 "state": d["state"],
                 "venues": len(d["venues"]),
@@ -336,24 +353,37 @@ if __name__ == "__main__":
                 "totalSeats": d["totalSeats"],
                 "fastfilling": d["fastfilling"],
                 "housefull": d["housefull"],
-                "occupancy": round((d["sold"] / d["totalSeats"]) * 100, 2) if d["totalSeats"] else 0.0
+                "occupancy": calc_occupancy(d["sold"], d["totalSeats"])
             })
 
-        for c in m["Chain_details"].values():
-            final_summary[movie]["Chain_details"].append({
-                "chain": c["chain"],
-                "venues": len(c["venues"]),
-                "shows": c["shows"],
-                "gross": round(c["gross"], 2),
-                "sold": c["sold"],
-                "totalSeats": c["totalSeats"],
-                "fastfilling": c["fastfilling"],
-                "housefull": c["housefull"],
-                "occupancy": round((c["sold"] / c["totalSeats"]) * 100, 2) if c["totalSeats"] else 0.0
+        for l in m["Language_details"].values():
+            final_summary[movie]["Language_details"].append({
+                "language": l["language"],
+                "venues": len(l["venues"]),
+                "shows": l["shows"],
+                "gross": round(l["gross"], 2),
+                "sold": l["sold"],
+                "totalSeats": l["totalSeats"],
+                "fastfilling": l["fastfilling"],
+                "housefull": l["housefull"],
+                "occupancy": calc_occupancy(l["sold"], l["totalSeats"])
+            })
+
+        for f in m["Format_details"].values():
+            final_summary[movie]["Format_details"].append({
+                "dimension": f["dimension"],
+                "venues": len(f["venues"]),
+                "shows": f["shows"],
+                "gross": round(f["gross"], 2),
+                "sold": f["sold"],
+                "totalSeats": f["totalSeats"],
+                "fastfilling": f["fastfilling"],
+                "housefull": f["housefull"],
+                "occupancy": calc_occupancy(f["sold"], f["totalSeats"])
             })
 
     # =====================================================
-    # SAVE FILES
+    # SAVE
     # =====================================================
     with open(DETAILED_FILE, "w", encoding="utf-8") as f:
         json.dump(detailed, f, indent=2, ensure_ascii=False)

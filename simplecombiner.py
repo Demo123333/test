@@ -4,11 +4,11 @@ from datetime import datetime, timedelta
 import pytz
 
 # =====================================================
-# DATE (IST + 1)
+# DATE CHOOSE YOURSELF (+2 DAYS)
 # =====================================================
 IST = pytz.timezone("Asia/Kolkata")
 NOW_IST = datetime.now(IST)
-DATE_CODE = (NOW_IST + timedelta(days=1)).strftime("%Y%m%d")
+DATE_CODE = (NOW_IST + timedelta(days=2)).strftime("%Y%m%d")
 LAST_UPDATED = NOW_IST.strftime("%Y-%m-%d %H:%M IST")
 
 BASE_DIR = f"advance/data/{DATE_CODE}"
@@ -169,7 +169,7 @@ for r in final_rows:
     elif occ >= 50:
         m["fastfilling"] += 1
 
-    # -------- CITY --------
+    # ---------------- CITY ----------------
     ck = (city, state)
     if ck not in m["City_details"]:
         m["City_details"][ck] = {
@@ -195,7 +195,7 @@ for r in final_rows:
     elif occ >= 50:
         d["fastfilling"] += 1
 
-    # -------- LANGUAGE --------
+    # ---------------- LANGUAGE ----------------
     if lang not in m["Language_details"]:
         m["Language_details"][lang] = {
             "language": lang,
@@ -219,7 +219,7 @@ for r in final_rows:
     elif occ >= 50:
         L["fastfilling"] += 1
 
-    # -------- FORMAT --------
+    # ---------------- FORMAT ----------------
     if dim not in m["Format_details"]:
         m["Format_details"][dim] = {
             "dimension": dim,

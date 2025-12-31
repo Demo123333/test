@@ -3,7 +3,6 @@ import os
 import random
 import time
 import threading
-import signal
 from datetime import datetime, timedelta, timezone
 
 import cloudscraper
@@ -15,12 +14,9 @@ SHARD_ID = 1
 API_TIMEOUT = 12
 HARD_TIMEOUT = 15
 
-# ⏱️ cutoff window (minutes)
-CUTOFF_MINUTES = 200   # ≈ 3h 20m
+CUTOFF_MINUTES = 200  # currently unused (kept as-is)
 
 IST = timezone(timedelta(hours=5, minutes=30))
-
-# 🔥 TODAY ONLY
 DATE_CODE = datetime.now(IST).strftime("%Y%m%d")
 
 BASE_DIR = os.path.join("daily", "data", DATE_CODE)
@@ -220,6 +216,7 @@ if __name__ == "__main__":
             for r in rows:
                 r["city"] = venues[vcode].get("City", "Unknown")
                 r["state"] = venues[vcode].get("State", "Unknown")
+                r["source"] = "BMS"
                 r["date"] = DATE_CODE
             all_rows.extend(rows)
         except Exception as e:
@@ -239,7 +236,6 @@ if __name__ == "__main__":
         city  = r["city"]
         state = r["state"]
         venue = r["venue"]
-        chain = r["chain"]
         lang  = r["language"]
         dim   = r["dimension"]
 
@@ -253,8 +249,9 @@ if __name__ == "__main__":
                 "shows": 0, "gross": 0.0, "sold": 0, "totalSeats": 0,
                 "venues": set(), "cities": set(),
                 "fastfilling": 0, "housefull": 0,
-                "details": {}, "Chain_details": {},
-                "Language_details": {}, "Format_details": {}
+                "details": {},
+                "Language_details": {},
+                "Format_details": {}
             }
 
         m = summary[movie]
@@ -286,24 +283,6 @@ if __name__ == "__main__":
         d["totalSeats"] += total
         if occ >= 98: d["housefull"] += 1
         elif occ >= 50: d["fastfilling"] += 1
-
-        # -------- CHAIN --------
-        if chain not in m["Chain_details"]:
-            m["Chain_details"][chain] = {
-                "chain": chain,
-                "venues": set(), "shows": 0,
-                "gross": 0.0, "sold": 0,
-                "totalSeats": 0,
-                "fastfilling": 0, "housefull": 0
-            }
-        c = m["Chain_details"][chain]
-        c["venues"].add(venue)
-        c["shows"] += 1
-        c["gross"] += gross
-        c["sold"] += sold
-        c["totalSeats"] += total
-        if occ >= 98: c["housefull"] += 1
-        elif occ >= 50: c["fastfilling"] += 1
 
         # -------- LANGUAGE --------
         if lang not in m["Language_details"]:
@@ -376,7 +355,6 @@ if __name__ == "__main__":
                 "occupancy": calc_occupancy(d["sold"], d["totalSeats"])
             })
 
-    
         for l in m["Language_details"].values():
             final_summary[movie]["Language_details"].append({
                 "language": l["language"],
