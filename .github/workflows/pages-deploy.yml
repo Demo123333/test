@@ -1,0 +1,37 @@
+name: Cloudflare Pages Conditional Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-advance:
+    if: contains(toLower(join(github.event.commits.*.message, ' ')), '[final]')
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy Advance Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: allindiaadvance
+          directory: advance
+
+  deploy-daily:
+    if: contains(toLower(join(github.event.commits.*.message, ' ')), '[final]')
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy Daily Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          projectName: dailysales
+          directory: daily
