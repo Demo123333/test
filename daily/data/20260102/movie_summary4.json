@@ -1,26 +1,38 @@
 {
   "Avatar: Fire and Ash": {
-    "shows": 2,
-    "gross": 56386.0,
-    "sold": 148,
-    "totalSeats": 743,
-    "venues": 2,
-    "cities": 2,
+    "shows": 3,
+    "gross": 74386.0,
+    "sold": 185,
+    "totalSeats": 972,
+    "venues": 3,
+    "cities": 3,
     "fastfilling": 0,
     "housefull": 0,
-    "occupancy": 19.92,
+    "occupancy": 19.03,
     "City_details": [
       {
         "city": "Hyderabad",
         "state": "Telangana",
         "venues": 1,
         "shows": 1,
-        "gross": 53600.0,
-        "sold": 134,
+        "gross": 54400.0,
+        "sold": 136,
         "totalSeats": 629,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 21.3
+        "occupancy": 21.62
+      },
+      {
+        "city": "Kochi",
+        "state": "Kerala",
+        "venues": 1,
+        "shows": 1,
+        "gross": 17200.0,
+        "sold": 35,
+        "totalSeats": 229,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 15.28
       },
       {
         "city": "Mumbai",
@@ -38,14 +50,14 @@
     "Language_details": [
       {
         "language": "English",
-        "venues": 1,
-        "shows": 1,
-        "gross": 53600.0,
-        "sold": 134,
-        "totalSeats": 629,
+        "venues": 2,
+        "shows": 2,
+        "gross": 71600.0,
+        "sold": 171,
+        "totalSeats": 858,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 21.3
+        "occupancy": 19.93
       },
       {
         "language": "Hindi",
@@ -64,12 +76,23 @@
         "dimension": "3D",
         "venues": 1,
         "shows": 1,
-        "gross": 53600.0,
-        "sold": 134,
+        "gross": 54400.0,
+        "sold": 136,
         "totalSeats": 629,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 21.3
+        "occupancy": 21.62
+      },
+      {
+        "dimension": "IMAX 3D",
+        "venues": 1,
+        "shows": 1,
+        "gross": 17200.0,
+        "sold": 35,
+        "totalSeats": 229,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 15.28
       },
       {
         "dimension": "2D",
@@ -85,24 +108,60 @@
     ]
   },
   "Dhurandhar": {
-    "shows": 1,
-    "gross": 0.0,
-    "sold": 0,
-    "totalSeats": 183,
-    "venues": 1,
-    "cities": 1,
+    "shows": 10,
+    "gross": 20746.0,
+    "sold": 93,
+    "totalSeats": 2175,
+    "venues": 9,
+    "cities": 4,
     "fastfilling": 0,
     "housefull": 0,
-    "occupancy": 0.0,
+    "occupancy": 4.28,
     "City_details": [
       {
-        "city": "Mumbai",
+        "city": "Pen",
         "state": "Maharashtra",
         "venues": 1,
         "shows": 1,
         "gross": 0.0,
         "sold": 0,
-        "totalSeats": 183,
+        "totalSeats": 261,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 0.0
+      },
+      {
+        "city": "Navi Mumbai",
+        "state": "Maharashtra",
+        "venues": 1,
+        "shows": 1,
+        "gross": 6560.0,
+        "sold": 18,
+        "totalSeats": 173,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 10.4
+      },
+      {
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "venues": 6,
+        "shows": 7,
+        "gross": 14186.0,
+        "sold": 75,
+        "totalSeats": 1640,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 4.57
+      },
+      {
+        "city": "Kalyan",
+        "state": "Maharashtra",
+        "venues": 1,
+        "shows": 1,
+        "gross": 0.0,
+        "sold": 0,
+        "totalSeats": 101,
         "fastfilling": 0,
         "housefull": 0,
         "occupancy": 0.0
@@ -111,11 +170,62 @@
     "Language_details": [
       {
         "language": "Hindi",
+        "venues": 9,
+        "shows": 10,
+        "gross": 20746.0,
+        "sold": 93,
+        "totalSeats": 2175,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 4.28
+      }
+    ],
+    "Format_details": [
+      {
+        "dimension": "2D",
+        "venues": 9,
+        "shows": 10,
+        "gross": 20746.0,
+        "sold": 93,
+        "totalSeats": 2175,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 4.28
+      }
+    ]
+  },
+  "45": {
+    "shows": 1,
+    "gross": 0.0,
+    "sold": 0,
+    "totalSeats": 170,
+    "venues": 1,
+    "cities": 1,
+    "fastfilling": 0,
+    "housefull": 0,
+    "occupancy": 0.0,
+    "City_details": [
+      {
+        "city": "Jharsuguda",
+        "state": "Odisha",
         "venues": 1,
         "shows": 1,
         "gross": 0.0,
         "sold": 0,
-        "totalSeats": 183,
+        "totalSeats": 170,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 0.0
+      }
+    ],
+    "Language_details": [
+      {
+        "language": "Tamil",
+        "venues": 1,
+        "shows": 1,
+        "gross": 0.0,
+        "sold": 0,
+        "totalSeats": 170,
         "fastfilling": 0,
         "housefull": 0,
         "occupancy": 0.0
@@ -128,10 +238,112 @@
         "shows": 1,
         "gross": 0.0,
         "sold": 0,
-        "totalSeats": 183,
+        "totalSeats": 170,
         "fastfilling": 0,
         "housefull": 0,
         "occupancy": 0.0
+      }
+    ]
+  },
+  "Jujutsu Kaisen: Hidden Inventory / Premature Death": {
+    "shows": 1,
+    "gross": 1440.0,
+    "sold": 6,
+    "totalSeats": 217,
+    "venues": 1,
+    "cities": 1,
+    "fastfilling": 0,
+    "housefull": 0,
+    "occupancy": 2.76,
+    "City_details": [
+      {
+        "city": "Navi Mumbai",
+        "state": "Maharashtra",
+        "venues": 1,
+        "shows": 1,
+        "gross": 1440.0,
+        "sold": 6,
+        "totalSeats": 217,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 2.76
+      }
+    ],
+    "Language_details": [
+      {
+        "language": "Japanese",
+        "venues": 1,
+        "shows": 1,
+        "gross": 1440.0,
+        "sold": 6,
+        "totalSeats": 217,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 2.76
+      }
+    ],
+    "Format_details": [
+      {
+        "dimension": "2D",
+        "venues": 1,
+        "shows": 1,
+        "gross": 1440.0,
+        "sold": 6,
+        "totalSeats": 217,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 2.76
+      }
+    ]
+  },
+  "Ikkis": {
+    "shows": 2,
+    "gross": 9025.0,
+    "sold": 35,
+    "totalSeats": 452,
+    "venues": 2,
+    "cities": 1,
+    "fastfilling": 0,
+    "housefull": 0,
+    "occupancy": 7.74,
+    "City_details": [
+      {
+        "city": "Mumbai",
+        "state": "Maharashtra",
+        "venues": 2,
+        "shows": 2,
+        "gross": 9025.0,
+        "sold": 35,
+        "totalSeats": 452,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 7.74
+      }
+    ],
+    "Language_details": [
+      {
+        "language": "Hindi",
+        "venues": 2,
+        "shows": 2,
+        "gross": 9025.0,
+        "sold": 35,
+        "totalSeats": 452,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 7.74
+      }
+    ],
+    "Format_details": [
+      {
+        "dimension": "2D",
+        "venues": 2,
+        "shows": 2,
+        "gross": 9025.0,
+        "sold": 35,
+        "totalSeats": 452,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 7.74
       }
     ]
   }
