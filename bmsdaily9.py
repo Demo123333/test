@@ -11,17 +11,14 @@ import pytz
 SHARD_ID = 9
 CONCURRENCY = 20
 TIMEOUT = aiohttp.ClientTimeout(total=25)
-
-CUTOFF_MINUTES = 200   # ⏱️ same as BMS daily
+CUTOFF_MINUTES = 200
 
 IST = pytz.timezone("Asia/Kolkata")
-NOW_IST = datetime.now(IST) 
+NOW_IST = datetime.now(IST)
 
-
-# 🔥 TODAY ONLY
 DATE_CODE = NOW_IST.strftime("%Y%m%d")
 DATE_DISTRICT = NOW_IST.strftime("%Y-%m-%d")
-print(f"🗓️  Date Code: {DATE_CODE}, District Date: {DATE_DISTRICT}")
+
 BASE_DIR = os.path.join("daily", "data", DATE_CODE)
 LOG_DIR = os.path.join(BASE_DIR, "logs")
 os.makedirs(LOG_DIR, exist_ok=True)
@@ -29,7 +26,6 @@ os.makedirs(LOG_DIR, exist_ok=True)
 DETAILED_FILE = f"{BASE_DIR}/detailed{SHARD_ID}.json"
 SUMMARY_FILE  = f"{BASE_DIR}/movie_summary{SHARD_ID}.json"
 LOG_FILE      = f"{LOG_DIR}/districtdaily{SHARD_ID}.log"
-
 
 API_URL = (
     "https://www.district.in/gw/consumer/movies/v3/cinema"
@@ -53,7 +49,6 @@ HEADERS = {
     ),
     "referer": "https://www.district.in/"
 }
-
 # =====================================================
 # LOGGING
 # =====================================================
@@ -78,19 +73,26 @@ log(f"📍 Loaded {len(DIST_VENUES)} district venues")
 def calc_occupancy(sold, total):
     return round((sold / total) * 100, 2) if total else 0.0
 
-def dedupe(rows):
-    seen = set()
-    out = []
-    for r in rows:
-        key = (r["venue"], r["time"], r["session_id"], r["audi"])
-        if key in seen:
-            continue
-        seen.add(key)
-        out.append(r)
-    return out
+def show_key(r):
+    return (r["venue"], r["time"], r["session_id"], r["audi"])
 
 def norm(s):
     return s.strip() if s else "UNKNOWN"
+
+def minutes_left(show_time_str):
+    try:
+        now = NOW_IST
+        t = datetime.strptime(show_time_str, "%I:%M %p").replace(
+            year=now.year,
+            month=now.month,
+            day=now.day,
+            tzinfo=IST
+        )
+        if t < now - timedelta(hours=6):
+            t += timedelta(days=1)
+        return (t - now).total_seconds() / 60
+    except:
+        return 9999
 
 # =====================================================
 # FETCH SINGLE VENUE
@@ -98,7 +100,6 @@ def norm(s):
 async def fetch_one(session, venue):
     cid = venue.get("id")
     url = API_URL.format(cid=cid, date=DATE_DISTRICT)
-
     try:
         async with session.get(url, headers=HEADERS) as resp:
             if resp.status != 200:
@@ -113,7 +114,7 @@ async def fetch_one(session, venue):
         return None
 
 # =====================================================
-# FETCH ALL
+# FETCH ALL (ASYNC)
 # =====================================================
 async def fetch_all():
     sem = asyncio.Semaphore(CONCURRENCY)
@@ -137,7 +138,7 @@ async def fetch_all():
 # PARSE
 # =====================================================
 def parse(results):
-    detailed = []
+    rows = []
 
     for res in results:
         venue_meta = res["venue"]
@@ -152,11 +153,10 @@ def parse(results):
 
         movie_map = {}
         for m in data.get("meta", {}).get("movies", []) or []:
-            movie_map[m.get("id")] = m
             movie_map[str(m.get("id"))] = m
 
         for s in data.get("pageData", {}).get("sessions", []) or []:
-            movie = movie_map.get(s.get("mid")) or movie_map.get(str(s.get("mid")))
+            movie = movie_map.get(str(s.get("mid")))
             if not movie:
                 continue
 
@@ -164,6 +164,16 @@ def parse(results):
             lang = norm(s.get("lang") or movie.get("lang"))
             fmt  = norm(s.get("scrnFmt")).replace("-", " | ")
 
+            show_time = (
+                datetime.strptime(s.get("showTime"), "%Y-%m-%dT%H:%M")
+                .replace(tzinfo=pytz.UTC)
+                .astimezone(IST)
+                .strftime("%I:%M %p")
+            )
+
+            mins = minutes_left(show_time)
+            if mins > CUTOFF_MINUTES:
+                continue
 
             total = int(s.get("total", 0))
             avail = int(s.get("avail", 0))
@@ -174,19 +184,13 @@ def parse(results):
                 for a in s.get("areas", []) or []
             )
 
-            detailed.append({
+            rows.append({
                 "movie": name,
                 "city": city,
                 "state": state,
                 "venue": venue_name,
                 "address": venue_addr,
-                "time": (
-                    datetime.strptime(s.get("showTime"), "%Y-%m-%dT%H:%M")
-                    .replace(tzinfo=pytz.UTC)
-                    .astimezone(IST)
-                    .strftime("%I:%M %p")
-                    if s.get("showTime") else ""
-                ),
+                "time": show_time,
                 "audi": s.get("audi", ""),
                 "session_id": str(s.get("id", "")),
                 "totalSeats": total,
@@ -195,14 +199,15 @@ def parse(results):
                 "gross": round(gross, 2),
                 "language": lang,
                 "dimension": fmt,
+                "minsLeft": round(mins, 1),
                 "source": "District",
                 "date": DATE_CODE
             })
 
-    return dedupe(detailed)
+    return rows
 
 # =====================================================
-# BUILD SUMMARY (NO CHAIN)
+# BUILD SUMMARY (CITY / LANGUAGE / FORMAT)
 # =====================================================
 def build_summary(detailed):
     summary = {}
@@ -215,24 +220,17 @@ def build_summary(detailed):
         lang  = r["language"]
         dim   = r["dimension"]
 
-        total = r["totalSeats"]
         sold  = r["sold"]
+        total = r["totalSeats"]
         gross = r["gross"]
         occ   = calc_occupancy(sold, total)
 
         if movie not in summary:
             summary[movie] = {
-                "shows": 0,
-                "gross": 0.0,
-                "sold": 0,
-                "totalSeats": 0,
-                "venues": set(),
-                "cities": set(),
-                "fastfilling": 0,
-                "housefull": 0,
-                "details": {},
-                "Language_details": {},
-                "Format_details": {}
+                "shows": 0, "gross": 0.0, "sold": 0, "totalSeats": 0,
+                "venues": set(), "cities": set(),
+                "fastfilling": 0, "housefull": 0,
+                "details": {}, "Language_details": {}, "Format_details": {}
             }
 
         m = summary[movie]
@@ -243,24 +241,16 @@ def build_summary(detailed):
         m["venues"].add(venue)
         m["cities"].add(city)
 
-        if occ >= 98:
-            m["housefull"] += 1
-        elif occ >= 50:
-            m["fastfilling"] += 1
+        if occ >= 98: m["housefull"] += 1
+        elif occ >= 50: m["fastfilling"] += 1
 
-        # -------- CITY --------
         ck = (city, state)
         if ck not in m["details"]:
             m["details"][ck] = {
-                "city": city,
-                "state": state,
-                "venues": set(),
-                "shows": 0,
-                "gross": 0.0,
-                "sold": 0,
-                "totalSeats": 0,
-                "fastfilling": 0,
-                "housefull": 0
+                "city": city, "state": state,
+                "venues": set(), "shows": 0,
+                "gross": 0.0, "sold": 0, "totalSeats": 0,
+                "fastfilling": 0, "housefull": 0
             }
 
         d = m["details"][ck]
@@ -269,22 +259,14 @@ def build_summary(detailed):
         d["gross"] += gross
         d["sold"] += sold
         d["totalSeats"] += total
-        if occ >= 98:
-            d["housefull"] += 1
-        elif occ >= 50:
-            d["fastfilling"] += 1
+        if occ >= 98: d["housefull"] += 1
+        elif occ >= 50: d["fastfilling"] += 1
 
-        # -------- LANGUAGE --------
         if lang not in m["Language_details"]:
             m["Language_details"][lang] = {
-                "language": lang,
-                "venues": set(),
-                "shows": 0,
-                "gross": 0.0,
-                "sold": 0,
-                "totalSeats": 0,
-                "fastfilling": 0,
-                "housefull": 0
+                "language": lang, "venues": set(),
+                "shows": 0, "gross": 0.0, "sold": 0,
+                "totalSeats": 0, "fastfilling": 0, "housefull": 0
             }
 
         L = m["Language_details"][lang]
@@ -293,22 +275,14 @@ def build_summary(detailed):
         L["gross"] += gross
         L["sold"] += sold
         L["totalSeats"] += total
-        if occ >= 98:
-            L["housefull"] += 1
-        elif occ >= 50:
-            L["fastfilling"] += 1
+        if occ >= 98: L["housefull"] += 1
+        elif occ >= 50: L["fastfilling"] += 1
 
-        # -------- FORMAT --------
         if dim not in m["Format_details"]:
             m["Format_details"][dim] = {
-                "dimension": dim,
-                "venues": set(),
-                "shows": 0,
-                "gross": 0.0,
-                "sold": 0,
-                "totalSeats": 0,
-                "fastfilling": 0,
-                "housefull": 0
+                "dimension": dim, "venues": set(),
+                "shows": 0, "gross": 0.0, "sold": 0,
+                "totalSeats": 0, "fastfilling": 0, "housefull": 0
             }
 
         F = m["Format_details"][dim]
@@ -317,10 +291,8 @@ def build_summary(detailed):
         F["gross"] += gross
         F["sold"] += sold
         F["totalSeats"] += total
-        if occ >= 98:
-            F["housefull"] += 1
-        elif occ >= 50:
-            F["fastfilling"] += 1
+        if occ >= 98: F["housefull"] += 1
+        elif occ >= 50: F["fastfilling"] += 1
 
     final = {}
     for movie, m in summary.items():
@@ -341,13 +313,10 @@ def build_summary(detailed):
 
         for d in m["details"].values():
             final[movie]["City_details"].append({
-                "city": d["city"],
-                "state": d["state"],
-                "venues": len(d["venues"]),
-                "shows": d["shows"],
+                "city": d["city"], "state": d["state"],
+                "venues": len(d["venues"]), "shows": d["shows"],
                 "gross": round(d["gross"], 2),
-                "sold": d["sold"],
-                "totalSeats": d["totalSeats"],
+                "sold": d["sold"], "totalSeats": d["totalSeats"],
                 "fastfilling": d["fastfilling"],
                 "housefull": d["housefull"],
                 "occupancy": calc_occupancy(d["sold"], d["totalSeats"])
@@ -356,11 +325,9 @@ def build_summary(detailed):
         for l in m["Language_details"].values():
             final[movie]["Language_details"].append({
                 "language": l["language"],
-                "venues": len(l["venues"]),
-                "shows": l["shows"],
+                "venues": len(l["venues"]), "shows": l["shows"],
                 "gross": round(l["gross"], 2),
-                "sold": l["sold"],
-                "totalSeats": l["totalSeats"],
+                "sold": l["sold"], "totalSeats": l["totalSeats"],
                 "fastfilling": l["fastfilling"],
                 "housefull": l["housefull"],
                 "occupancy": calc_occupancy(l["sold"], l["totalSeats"])
@@ -369,11 +336,9 @@ def build_summary(detailed):
         for f in m["Format_details"].values():
             final[movie]["Format_details"].append({
                 "dimension": f["dimension"],
-                "venues": len(f["venues"]),
-                "shows": f["shows"],
+                "venues": len(f["venues"]), "shows": f["shows"],
                 "gross": round(f["gross"], 2),
-                "sold": f["sold"],
-                "totalSeats": f["totalSeats"],
+                "sold": f["sold"], "totalSeats": f["totalSeats"],
                 "fastfilling": f["fastfilling"],
                 "housefull": f["housefull"],
                 "occupancy": calc_occupancy(f["sold"], f["totalSeats"])
@@ -385,9 +350,39 @@ def build_summary(detailed):
 # ENTRY
 # =====================================================
 async def main():
-    log("🚀 DISTRICT SCRAPER STARTED")
+    log("🚀 DISTRICT DAILY SCRAPER STARTED")
+
     results = await fetch_all()
-    detailed = parse(results)
+    fresh = parse(results)
+
+    if os.path.exists(DETAILED_FILE):
+        with open(DETAILED_FILE, "r", encoding="utf-8") as f:
+            old_rows = json.load(f)
+    else:
+        old_rows = []
+
+    old_map = {show_key(r): r for r in old_rows}
+    new_map = {}
+
+    for r in fresh:
+        key = show_key(r)
+        if key in old_map:
+            old_map[key].update({
+                "totalSeats": r["totalSeats"],
+                "available": r["available"],
+                "sold": r["sold"],
+                "gross": r["gross"],
+                "minsLeft": r["minsLeft"]
+            })
+            new_map[key] = old_map[key]
+        else:
+            new_map[key] = r
+
+    for k, v in old_map.items():
+        if k not in new_map:
+            new_map[k] = v
+
+    detailed = list(new_map.values())
     summary = build_summary(detailed)
 
     with open(DETAILED_FILE, "w", encoding="utf-8") as f:

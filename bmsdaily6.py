@@ -3,7 +3,6 @@ import os
 import random
 import time
 import threading
-import signal
 from datetime import datetime, timedelta, timezone
 
 import cloudscraper
@@ -14,23 +13,18 @@ import cloudscraper
 SHARD_ID = 6
 API_TIMEOUT = 12
 HARD_TIMEOUT = 15
-
-# ⏱️ cutoff window (minutes)
-CUTOFF_MINUTES = 200   # ≈ 3h 20m
+CUTOFF_MINUTES = 200
 
 IST = timezone(timedelta(hours=5, minutes=30))
-
-# 🔥 TODAY ONLY
 DATE_CODE = datetime.now(IST).strftime("%Y%m%d")
 
 BASE_DIR = os.path.join("daily", "data", DATE_CODE)
-LOG_DIR  = os.path.join(BASE_DIR, "logs")
+LOG_DIR = os.path.join(BASE_DIR, "logs")
 os.makedirs(LOG_DIR, exist_ok=True)
 
 DETAILED_FILE = f"{BASE_DIR}/detailed{SHARD_ID}.json"
 SUMMARY_FILE  = f"{BASE_DIR}/movie_summary{SHARD_ID}.json"
 LOG_FILE      = f"{LOG_DIR}/bmsdaily{SHARD_ID}.log"
-
 
 # =====================================================
 # LOGGING
@@ -57,8 +51,7 @@ class TimeoutError(Exception):
 def hard_timeout(seconds):
     def decorator(fn):
         def wrapper(*args, **kwargs):
-            result = {}
-            error = {}
+            result, error = {}, {}
 
             def target():
                 try:
@@ -80,12 +73,12 @@ def hard_timeout(seconds):
     return decorator
 
 # =====================================================
-# USER AGENTS / IDENTITY
+# IDENTITY
 # =====================================================
 USER_AGENTS = [
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120 Safari/537.36",
-    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/119 Safari/537.36",
-    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 Chrome/118 Safari/537.36",
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)",
+    "Mozilla/5.0 (X11; Linux x86_64)",
 ]
 
 thread_local = threading.local()
@@ -94,18 +87,14 @@ class Identity:
     def __init__(self):
         self.ua = random.choice(USER_AGENTS)
         self.ip = ".".join(str(random.randint(20, 230)) for _ in range(4))
-        self.scraper = cloudscraper.create_scraper(
-            browser={"browser": "chrome", "platform": "windows", "desktop": True}
-        )
+        self.scraper = cloudscraper.create_scraper()
 
     def headers(self):
         return {
             "User-Agent": self.ua,
-            "Accept": "application/json, text/plain, */*",
-            "Accept-Language": "en-IN,en;q=0.9",
-            "Origin": "https://in.bookmyshow.com",
-            "Referer": "https://in.bookmyshow.com/",
+            "Accept": "application/json",
             "X-Forwarded-For": self.ip,
+            "Referer": "https://in.bookmyshow.com",
         }
 
 def get_identity():
@@ -135,11 +124,22 @@ def fetch_api_raw(venue_code):
     return r.json()
 
 # =====================================================
+# TIME FILTER
+# =====================================================
+def minutes_left(show_time):
+    try:
+        now = datetime.now(IST)
+        t = datetime.strptime(show_time, "%I:%M %p")
+        t = t.replace(year=now.year, month=now.month, day=now.day, tzinfo=IST)
+        return (t - now).total_seconds() / 60
+    except Exception:
+        return 9999
+
+# =====================================================
 # PARSER
 # =====================================================
 def parse_payload(data):
     out = []
-
     sd = data.get("ShowDetails", [])
     if not sd:
         return out
@@ -153,8 +153,8 @@ def parse_payload(data):
         title = ev.get("EventTitle", "Unknown")
 
         for ch in ev.get("ChildEvents", []):
-            dim  = ch.get("EventDimension", "").strip() or "UNKNOWN"
-            lang = ch.get("EventLanguage", "").strip() or "UNKNOWN"
+            dim  = ch.get("EventDimension", "UNKNOWN")
+            lang = ch.get("EventLanguage", "UNKNOWN")
 
             for sh in ch.get("ShowTimes", []):
                 if sh.get("ShowDateCode") != DATE_CODE:
@@ -178,29 +178,20 @@ def parse_payload(data):
                     "dimension": dim,
                     "chain": chain,
                     "time": sh.get("ShowTime", ""),
-                    "audi": sh.get("Attributes", "") or "",
+                    "audi": sh.get("Attributes", ""),
                     "session_id": str(sh.get("SessionId", "")),
                     "totalSeats": total,
                     "available": avail,
                     "sold": sold,
-                    "gross": round(gross, 2)
+                    "gross": round(gross, 2),
                 })
-
     return out
 
 # =====================================================
-# DEDUPE
+# SHOW KEY
 # =====================================================
-def dedupe(rows):
-    seen = set()
-    out = []
-    for r in rows:
-        key = (r["venue"], r["time"], r["session_id"], r["audi"])
-        if key in seen:
-            continue
-        seen.add(key)
-        out.append(r)
-    return out
+def show_key(r):
+    return (r["venue"], r["time"], r["session_id"], r["audi"])
 
 # =====================================================
 # MAIN
@@ -217,22 +208,49 @@ if __name__ == "__main__":
         log(f"[{i}/{len(venues)}] {vcode}")
         try:
             raw = fetch_api_raw(vcode)
-            rows = parse_payload(raw)
-            for r in rows:
-                r["city"] = venues[vcode].get("City", "Unknown")
-                r["state"] = venues[vcode].get("State", "Unknown")
-                r["source"] = "BMS"
-                r["date"] = DATE_CODE
-            all_rows.extend(rows)
+            for r in parse_payload(raw):
+                mins = minutes_left(r["time"])
+                if mins <= CUTOFF_MINUTES:
+                    r.update({
+                        "minutes_left": round(mins, 1),
+                        "city": venues[vcode].get("City", "Unknown"),
+                        "state": venues[vcode].get("State", "Unknown"),
+                        "date": DATE_CODE,
+                        "source": "BMS",
+                    })
+                    all_rows.append(r)
         except Exception as e:
             reset_identity()
-            log(f"❌ {vcode} | {type(e).__name__}")
-        time.sleep(random.uniform(0.35, 0.7))
-
-    detailed = dedupe(all_rows)
+            log(f"❌ {vcode} | {e}")
+        time.sleep(random.uniform(0.4, 0.8))
 
     # =====================================================
-    # SUMMARY
+    # MERGE OLD DATA
+    # =====================================================
+    old_rows = []
+    if os.path.exists(DETAILED_FILE):
+        with open(DETAILED_FILE, "r", encoding="utf-8") as f:
+            old_rows = json.load(f)
+
+    old_map = {show_key(r): r for r in old_rows}
+    new_map = {}
+
+    for r in all_rows:
+        key = show_key(r)
+        if key in old_map:
+            old_map[key].update(r)
+            new_map[key] = old_map[key]
+        else:
+            new_map[key] = r
+
+    for k, v in old_map.items():
+        if k not in new_map:
+            new_map[k] = v
+
+    detailed = list(new_map.values())
+
+    # =====================================================
+    # SUMMARY (CITY / LANGUAGE / FORMAT)
     # =====================================================
     summary = {}
 
@@ -244,22 +262,28 @@ if __name__ == "__main__":
         lang  = r["language"]
         dim   = r["dimension"]
 
-        total = r["totalSeats"]
         sold  = r["sold"]
+        total = r["totalSeats"]
         gross = r["gross"]
         occ   = calc_occupancy(sold, total)
 
         if movie not in summary:
             summary[movie] = {
-                "shows": 0, "gross": 0.0, "sold": 0, "totalSeats": 0,
-                "venues": set(), "cities": set(),
-                "fastfilling": 0, "housefull": 0,
-                "details": {},
+                "shows": 0,
+                "gross": 0.0,
+                "sold": 0,
+                "totalSeats": 0,
+                "venues": set(),
+                "cities": set(),
+                "fastfilling": 0,
+                "housefull": 0,
+                "City_details": {},
                 "Language_details": {},
-                "Format_details": {}
+                "Format_details": {},
             }
 
         m = summary[movie]
+
         m["shows"] += 1
         m["gross"] += gross
         m["sold"] += sold
@@ -267,63 +291,87 @@ if __name__ == "__main__":
         m["venues"].add(venue)
         m["cities"].add(city)
 
-        if occ >= 98: m["housefull"] += 1
-        elif occ >= 50: m["fastfilling"] += 1
+        if occ >= 98:
+            m["housefull"] += 1
+        elif occ >= 50:
+            m["fastfilling"] += 1
 
         # -------- CITY --------
         ck = (city, state)
-        if ck not in m["details"]:
-            m["details"][ck] = {
-                "city": city, "state": state,
-                "venues": set(), "shows": 0,
-                "gross": 0.0, "sold": 0,
+        if ck not in m["City_details"]:
+            m["City_details"][ck] = {
+                "city": city,
+                "state": state,
+                "venues": set(),
+                "shows": 0,
+                "gross": 0.0,
+                "sold": 0,
                 "totalSeats": 0,
-                "fastfilling": 0, "housefull": 0
+                "fastfilling": 0,
+                "housefull": 0,
             }
-        d = m["details"][ck]
-        d["venues"].add(venue)
-        d["shows"] += 1
-        d["gross"] += gross
-        d["sold"] += sold
-        d["totalSeats"] += total
-        if occ >= 98: d["housefull"] += 1
-        elif occ >= 50: d["fastfilling"] += 1
+
+        c = m["City_details"][ck]
+        c["venues"].add(venue)
+        c["shows"] += 1
+        c["gross"] += gross
+        c["sold"] += sold
+        c["totalSeats"] += total
+
+        if occ >= 98:
+            c["housefull"] += 1
+        elif occ >= 50:
+            c["fastfilling"] += 1
 
         # -------- LANGUAGE --------
         if lang not in m["Language_details"]:
             m["Language_details"][lang] = {
                 "language": lang,
-                "venues": set(), "shows": 0,
-                "gross": 0.0, "sold": 0,
+                "venues": set(),
+                "shows": 0,
+                "gross": 0.0,
+                "sold": 0,
                 "totalSeats": 0,
-                "fastfilling": 0, "housefull": 0
+                "fastfilling": 0,
+                "housefull": 0,
             }
-        L = m["Language_details"][lang]
-        L["venues"].add(venue)
-        L["shows"] += 1
-        L["gross"] += gross
-        L["sold"] += sold
-        L["totalSeats"] += total
-        if occ >= 98: L["housefull"] += 1
-        elif occ >= 50: L["fastfilling"] += 1
+
+        l = m["Language_details"][lang]
+        l["venues"].add(venue)
+        l["shows"] += 1
+        l["gross"] += gross
+        l["sold"] += sold
+        l["totalSeats"] += total
+
+        if occ >= 98:
+            l["housefull"] += 1
+        elif occ >= 50:
+            l["fastfilling"] += 1
 
         # -------- FORMAT --------
         if dim not in m["Format_details"]:
             m["Format_details"][dim] = {
                 "dimension": dim,
-                "venues": set(), "shows": 0,
-                "gross": 0.0, "sold": 0,
+                "venues": set(),
+                "shows": 0,
+                "gross": 0.0,
+                "sold": 0,
                 "totalSeats": 0,
-                "fastfilling": 0, "housefull": 0
+                "fastfilling": 0,
+                "housefull": 0,
             }
-        F = m["Format_details"][dim]
-        F["venues"].add(venue)
-        F["shows"] += 1
-        F["gross"] += gross
-        F["sold"] += sold
-        F["totalSeats"] += total
-        if occ >= 98: F["housefull"] += 1
-        elif occ >= 50: F["fastfilling"] += 1
+
+        f = m["Format_details"][dim]
+        f["venues"].add(venue)
+        f["shows"] += 1
+        f["gross"] += gross
+        f["sold"] += sold
+        f["totalSeats"] += total
+
+        if occ >= 98:
+            f["housefull"] += 1
+        elif occ >= 50:
+            f["fastfilling"] += 1
 
     # =====================================================
     # FINAL SUMMARY
@@ -343,21 +391,21 @@ if __name__ == "__main__":
             "occupancy": calc_occupancy(m["sold"], m["totalSeats"]),
             "City_details": [],
             "Language_details": [],
-            "Format_details": []
+            "Format_details": [],
         }
 
-        for d in m["details"].values():
+        for c in m["City_details"].values():
             final_summary[movie]["City_details"].append({
-                "city": d["city"],
-                "state": d["state"],
-                "venues": len(d["venues"]),
-                "shows": d["shows"],
-                "gross": round(d["gross"], 2),
-                "sold": d["sold"],
-                "totalSeats": d["totalSeats"],
-                "fastfilling": d["fastfilling"],
-                "housefull": d["housefull"],
-                "occupancy": calc_occupancy(d["sold"], d["totalSeats"])
+                "city": c["city"],
+                "state": c["state"],
+                "venues": len(c["venues"]),
+                "shows": c["shows"],
+                "gross": round(c["gross"], 2),
+                "sold": c["sold"],
+                "totalSeats": c["totalSeats"],
+                "fastfilling": c["fastfilling"],
+                "housefull": c["housefull"],
+                "occupancy": calc_occupancy(c["sold"], c["totalSeats"]),
             })
 
         for l in m["Language_details"].values():
@@ -370,7 +418,7 @@ if __name__ == "__main__":
                 "totalSeats": l["totalSeats"],
                 "fastfilling": l["fastfilling"],
                 "housefull": l["housefull"],
-                "occupancy": calc_occupancy(l["sold"], l["totalSeats"])
+                "occupancy": calc_occupancy(l["sold"], l["totalSeats"]),
             })
 
         for f in m["Format_details"].values():
@@ -383,7 +431,7 @@ if __name__ == "__main__":
                 "totalSeats": f["totalSeats"],
                 "fastfilling": f["fastfilling"],
                 "housefull": f["housefull"],
-                "occupancy": calc_occupancy(f["sold"], f["totalSeats"])
+                "occupancy": calc_occupancy(f["sold"], f["totalSeats"]),
             })
 
     # =====================================================
