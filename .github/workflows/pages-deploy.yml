@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy-advance:
-    if: contains(lower(join(github.event.commits.*.message, ' ')), '[final]')
+    if: contains(join(github.event.commits.*.message, ' '), '[final]')
     runs-on: ubuntu-latest
 
     steps:
@@ -22,7 +22,7 @@ jobs:
           directory: advance
 
   deploy-daily:
-    if: contains(lower(join(github.event.commits.*.message, ' ')), '[daily]')
+    if: contains(join(github.event.commits.*.message, ' '), '[final]')
     runs-on: ubuntu-latest
 
     steps:
