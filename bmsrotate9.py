@@ -26,28 +26,7 @@ DETAILED_FILE = f"{BASE_DIR}/detailed{SHARD_ID}.json"
 SUMMARY_FILE  = f"{BASE_DIR}/movie_summary{SHARD_ID}.json"
 LOG_FILE      = f"{LOG_DIR}/district{SHARD_ID}.log"
 
-API_URL = (
-    "https://www.district.in/gw/consumer/movies/v3/cinema"
-    "?meta=1&reqData=1&version=3"
-    "&site_id=1&channel=mweb&child_site_id=1"
-    "&platform=district"
-    "&cinemaId={cid}"
-    "&date={date}"
-)
-
-HEADERS = {
-    "accept": "application/json",
-    "x-device-id": "945e8082-a763-4302-9508-2fd3f5dbb404",
-    "x-guest-token": "1757103021647119385_7875787567527143057_dae9c31687b879e416698dae45db6331d57b79c887d37fd063e09836d3f08c24",
-    "x-app-type": "ed_mweb",
-    "api_source": "district",
-    "user-agent": (
-        "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) "
-        "Chrome/143.0.0.0 Mobile Safari/537.36"
-    ),
-    "referer": "https://www.district.in/"
-}
+API_URL = "https://district.boxoffice24.workers.dev/?cinema_id={cid}&date={date}"
 
 # =====================================================
 # LOGGING
