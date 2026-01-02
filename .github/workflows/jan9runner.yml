@@ -3,7 +3,7 @@ name: BMS Jan 9 Hourly Tracker
 on:
   workflow_dispatch:
   schedule:
-    - cron: "*/30 * * * *"
+    - cron: "0 * * * *"
     
 permissions:
   contents: write
