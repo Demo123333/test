@@ -1,4 +1,4 @@
-name: Cloudflare Pages Conditional Deploy
+name: Cloudflare Pages Conditional Deploy (FINAL ONLY)
 
 on:
   push:
@@ -7,13 +7,21 @@ on:
 
 jobs:
   deploy-advance:
-    if: contains(join(github.event.commits.*.message, ' '), '[final]')
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      - name: Deploy Advance Pages
+      # 🔎 Read latest commit message (works for user + actions-user)
+      - name: Read commit message (lowercase)
+        id: commit
+        run: |
+          echo "message=$(git log -1 --pretty=%B | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+      # 🚀 Deploy BMS FINAL (advance/)
+      - name: Deploy Advance Pages (BMS FINAL)
+        if: contains(steps.commit.outputs.message, 'final')
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -21,14 +29,23 @@ jobs:
           projectName: allindiaadvance
           directory: advance
 
+
   deploy-daily:
-    if: contains(join(github.event.commits.*.message, ' '), '[final]')
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
 
-      - name: Deploy Daily Pages
+      # 🔎 Read latest commit message (works for user + actions-user)
+      - name: Read commit message (lowercase)
+        id: commit
+        run: |
+          echo "message=$(git log -1 --pretty=%B | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+      # 🚀 Deploy DIS FINAL (daily/)
+      - name: Deploy Daily Pages (DIS FINAL)
+        if: contains(steps.commit.outputs.message, 'final')
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
