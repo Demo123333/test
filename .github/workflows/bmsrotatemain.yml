@@ -3,7 +3,7 @@ name: BMS Advance Tracker (Hourly | Next 5 Days)
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 * * * *"   # every hour (UTC)
+    - cron: "30 * * * *"
 
 permissions:
   contents: write
