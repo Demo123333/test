@@ -1,4 +1,4 @@
-name: Cloudflare Pages Conditional Deploy (FINAL ONLY)
+name: Cloudflare Pages Auto Deploy
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
       - main
   schedule:
     - cron: "*/10 * * * *"   # every 10 minutes
-  workflow_dispatch:        # optional manual trigger
+  workflow_dispatch:
 
 jobs:
   deploy-advance:
@@ -16,17 +16,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Read commit message (lowercase)
-        id: commit
-        run: |
-          {
-            echo "message<<EOF"
-            git log -1 --pretty=%B | tr '[:upper:]' '[:lower:]'
-            echo "EOF"
-          } >> "$GITHUB_OUTPUT"
-
-      - name: Deploy Advance Pages (BMS FINAL)
-        if: contains(steps.commit.outputs.message, 'final')
+      - name: Deploy Advance Pages
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -42,17 +32,7 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Read commit message (lowercase)
-        id: commit
-        run: |
-          {
-            echo "message<<EOF"
-            git log -1 --pretty=%B | tr '[:upper:]' '[:lower:]'
-            echo "EOF"
-          } >> "$GITHUB_OUTPUT"
-
-      - name: Deploy Daily Pages (DIS FINAL)
-        if: contains(steps.commit.outputs.message, 'final')
+      - name: Deploy Daily Pages
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
