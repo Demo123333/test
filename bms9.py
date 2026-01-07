@@ -4,7 +4,6 @@ import asyncio
 import aiohttp
 from datetime import datetime, timedelta
 import pytz
-import zstandard as zstd
 import json
 from io import BytesIO
 
@@ -94,7 +93,7 @@ async def fetch_one(session, venue):
     except Exception as e:
         log(f"❌ {cid} {type(e).__name__}")
         return None
-        
+
 # =====================================================
 # FETCH ALL
 # =====================================================

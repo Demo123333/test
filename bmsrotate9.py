@@ -4,7 +4,6 @@ import asyncio
 import aiohttp
 from datetime import datetime, timedelta
 import pytz
-import zstandard as zstd
 from io import BytesIO
 # =====================================================
 # CONFIG

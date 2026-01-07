@@ -6,7 +6,6 @@ import aiohttp
 from datetime import datetime, timedelta
 import pytz
 
-import zstandard as zstd
 
 # =====================================================
 # CONFIG
