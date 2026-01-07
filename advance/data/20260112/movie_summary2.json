@@ -216,16 +216,28 @@
     ]
   },
   "The Raja Saab": {
-    "shows": 41,
-    "gross": 10000.0,
-    "sold": 40,
-    "totalSeats": 7629,
-    "venues": 11,
-    "cities": 11,
+    "shows": 45,
+    "gross": 30000.0,
+    "sold": 120,
+    "totalSeats": 10665,
+    "venues": 12,
+    "cities": 12,
     "fastfilling": 0,
     "housefull": 0,
-    "occupancy": 0.52,
+    "occupancy": 1.13,
     "City_details": [
+      {
+        "city": "Mysuru (Mysore)",
+        "state": "Karnataka",
+        "venues": 1,
+        "shows": 4,
+        "gross": 0.0,
+        "sold": 0,
+        "totalSeats": 3036,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 0.0
+      },
       {
         "city": "Mundargi",
         "state": "Karnataka",
@@ -243,12 +255,12 @@
         "state": "Andhra Pradesh",
         "venues": 1,
         "shows": 4,
-        "gross": 10000.0,
-        "sold": 40,
+        "gross": 30000.0,
+        "sold": 120,
         "totalSeats": 1288,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 3.11
+        "occupancy": 9.32
       },
       {
         "city": "Ramgarhwa",
@@ -361,15 +373,26 @@
     ],
     "Language_details": [
       {
+        "language": "Hindi",
+        "venues": 8,
+        "shows": 31,
+        "gross": 0.0,
+        "sold": 0,
+        "totalSeats": 7683,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 0.0
+      },
+      {
         "language": "Telugu",
         "venues": 3,
         "shows": 8,
-        "gross": 10000.0,
-        "sold": 40,
+        "gross": 30000.0,
+        "sold": 120,
         "totalSeats": 2302,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 1.74
+        "occupancy": 5.21
       },
       {
         "language": "Kannada",
@@ -381,14 +404,54 @@
         "fastfilling": 0,
         "housefull": 0,
         "occupancy": 0.0
-      },
+      }
+    ],
+    "Format_details": [
       {
-        "language": "Hindi",
-        "venues": 7,
-        "shows": 27,
+        "dimension": "2D",
+        "venues": 12,
+        "shows": 45,
+        "gross": 30000.0,
+        "sold": 120,
+        "totalSeats": 10665,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 1.13
+      }
+    ]
+  },
+  "The Devil": {
+    "shows": 4,
+    "gross": 0.0,
+    "sold": 0,
+    "totalSeats": 2800,
+    "venues": 1,
+    "cities": 1,
+    "fastfilling": 0,
+    "housefull": 0,
+    "occupancy": 0.0,
+    "City_details": [
+      {
+        "city": "Mysuru (Mysore)",
+        "state": "Karnataka",
+        "venues": 1,
+        "shows": 4,
         "gross": 0.0,
         "sold": 0,
-        "totalSeats": 4647,
+        "totalSeats": 2800,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 0.0
+      }
+    ],
+    "Language_details": [
+      {
+        "language": "Kannada",
+        "venues": 1,
+        "shows": 4,
+        "gross": 0.0,
+        "sold": 0,
+        "totalSeats": 2800,
         "fastfilling": 0,
         "housefull": 0,
         "occupancy": 0.0
@@ -397,14 +460,14 @@
     "Format_details": [
       {
         "dimension": "2D",
-        "venues": 11,
-        "shows": 41,
-        "gross": 10000.0,
-        "sold": 40,
-        "totalSeats": 7629,
+        "venues": 1,
+        "shows": 4,
+        "gross": 0.0,
+        "sold": 0,
+        "totalSeats": 2800,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 0.52
+        "occupancy": 0.0
       }
     ]
   },
