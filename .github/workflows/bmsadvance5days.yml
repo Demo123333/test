@@ -20,7 +20,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        day: [1, 2, 3, 4, 5]
+        day: [2, 3, 4, 5,6]
         shard: [1,2,3,4,5,6,7,8,9]
 
     steps:
