@@ -39,7 +39,7 @@ jobs:
       - name: 📦 Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install cloudscraper aiohttp pytz
+          pip install cloudscraper aiohttp pytz zstandard
 
       # ---------------- RUN DAILY SCRAPER ----------------
       - name: 🚀 Run BMS District Daily shard 9 scraper
