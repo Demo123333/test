@@ -1,26 +1,38 @@
 {
   "The Raja Saab": {
-    "shows": 23,
-    "gross": 112780.0,
-    "sold": 800,
-    "totalSeats": 5124,
-    "venues": 6,
-    "cities": 6,
-    "fastfilling": 8,
+    "shows": 35,
+    "gross": 441800.0,
+    "sold": 3428,
+    "totalSeats": 8728,
+    "venues": 9,
+    "cities": 9,
+    "fastfilling": 12,
     "housefull": 0,
-    "occupancy": 15.61,
+    "occupancy": 39.28,
     "City_details": [
+      {
+        "city": "Pune",
+        "state": "maharashtra",
+        "venues": 1,
+        "shows": 4,
+        "gross": 0.0,
+        "sold": 0,
+        "totalSeats": 308,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 0.0
+      },
       {
         "city": "Guntur",
         "state": "andhra-pradesh",
         "venues": 1,
         "shows": 4,
-        "gross": 34220.0,
-        "sold": 116,
+        "gross": 35400.0,
+        "sold": 120,
         "totalSeats": 2152,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 5.39
+        "occupancy": 5.58
       },
       {
         "city": "Jamtara",
@@ -47,6 +59,18 @@
         "occupancy": 0.0
       },
       {
+        "city": "Nanjangud",
+        "state": "karnataka",
+        "venues": 1,
+        "shows": 4,
+        "gross": 327840.0,
+        "sold": 2624,
+        "totalSeats": 2936,
+        "fastfilling": 4,
+        "housefull": 0,
+        "occupancy": 89.37
+      },
+      {
         "city": "Ekma Chapra",
         "state": "bihar",
         "venues": 1,
@@ -57,6 +81,18 @@
         "fastfilling": 4,
         "housefull": 0,
         "occupancy": 80.31
+      },
+      {
+        "city": "Jamkhambhaliya",
+        "state": "gujarat",
+        "venues": 1,
+        "shows": 4,
+        "gross": 0.0,
+        "sold": 0,
+        "totalSeats": 360,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 0.0
       },
       {
         "city": "Jhabua",
@@ -85,52 +121,63 @@
     ],
     "Language_details": [
       {
-        "language": "Telugu",
-        "venues": 1,
-        "shows": 4,
-        "gross": 34220.0,
-        "sold": 116,
-        "totalSeats": 2152,
-        "fastfilling": 0,
-        "housefull": 0,
-        "occupancy": 5.39
-      },
-      {
         "language": "Hindi",
-        "venues": 5,
-        "shows": 19,
+        "venues": 7,
+        "shows": 27,
         "gross": 78560.0,
         "sold": 684,
-        "totalSeats": 2972,
+        "totalSeats": 3640,
         "fastfilling": 8,
         "housefull": 0,
-        "occupancy": 23.01
+        "occupancy": 18.79
+      },
+      {
+        "language": "Telugu",
+        "venues": 2,
+        "shows": 6,
+        "gross": 199320.0,
+        "sold": 1432,
+        "totalSeats": 3620,
+        "fastfilling": 2,
+        "housefull": 0,
+        "occupancy": 39.56
+      },
+      {
+        "language": "Kannada",
+        "venues": 1,
+        "shows": 2,
+        "gross": 163920.0,
+        "sold": 1312,
+        "totalSeats": 1468,
+        "fastfilling": 2,
+        "housefull": 0,
+        "occupancy": 89.37
       }
     ],
     "Format_details": [
       {
         "dimension": "2D",
-        "venues": 6,
-        "shows": 23,
-        "gross": 112780.0,
-        "sold": 800,
-        "totalSeats": 5124,
-        "fastfilling": 8,
+        "venues": 9,
+        "shows": 35,
+        "gross": 441800.0,
+        "sold": 3428,
+        "totalSeats": 8728,
+        "fastfilling": 12,
         "housefull": 0,
-        "occupancy": 15.61
+        "occupancy": 39.28
       }
     ]
   },
   "Parasakthi": {
     "shows": 13,
-    "gross": 11210.0,
-    "sold": 59,
+    "gross": 11970.0,
+    "sold": 63,
     "totalSeats": 4715,
     "venues": 3,
     "cities": 3,
     "fastfilling": 0,
     "housefull": 0,
-    "occupancy": 1.25,
+    "occupancy": 1.34,
     "City_details": [
       {
         "city": "Aruppukkottai",
@@ -161,12 +208,12 @@
         "state": "tamil-nadu",
         "venues": 1,
         "shows": 5,
-        "gross": 11400.0,
-        "sold": 60,
+        "gross": 12160.0,
+        "sold": 64,
         "totalSeats": 1035,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 5.8
+        "occupancy": 6.18
       }
     ],
     "Language_details": [
@@ -174,12 +221,12 @@
         "language": "Tamil",
         "venues": 3,
         "shows": 13,
-        "gross": 11210.0,
-        "sold": 59,
+        "gross": 11970.0,
+        "sold": 63,
         "totalSeats": 4715,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 1.25
+        "occupancy": 1.34
       }
     ],
     "Format_details": [
@@ -187,12 +234,114 @@
         "dimension": "2D",
         "venues": 3,
         "shows": 13,
-        "gross": 11210.0,
-        "sold": 59,
+        "gross": 11970.0,
+        "sold": 63,
         "totalSeats": 4715,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 1.25
+        "occupancy": 1.34
+      }
+    ]
+  },
+  "Bicharo Bachelor": {
+    "shows": 1,
+    "gross": 0.0,
+    "sold": 0,
+    "totalSeats": 84,
+    "venues": 1,
+    "cities": 1,
+    "fastfilling": 0,
+    "housefull": 0,
+    "occupancy": 0.0,
+    "City_details": [
+      {
+        "city": "Jamkhambhaliya",
+        "state": "gujarat",
+        "venues": 1,
+        "shows": 1,
+        "gross": 0.0,
+        "sold": 0,
+        "totalSeats": 84,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 0.0
+      }
+    ],
+    "Language_details": [
+      {
+        "language": "Gujarati",
+        "venues": 1,
+        "shows": 1,
+        "gross": 0.0,
+        "sold": 0,
+        "totalSeats": 84,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 0.0
+      }
+    ],
+    "Format_details": [
+      {
+        "dimension": "2D",
+        "venues": 1,
+        "shows": 1,
+        "gross": 0.0,
+        "sold": 0,
+        "totalSeats": 84,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 0.0
+      }
+    ]
+  },
+  "Jai Kanhaiyalall Ki": {
+    "shows": 1,
+    "gross": 0.0,
+    "sold": 0,
+    "totalSeats": 92,
+    "venues": 1,
+    "cities": 1,
+    "fastfilling": 0,
+    "housefull": 0,
+    "occupancy": 0.0,
+    "City_details": [
+      {
+        "city": "Jamkhambhaliya",
+        "state": "gujarat",
+        "venues": 1,
+        "shows": 1,
+        "gross": 0.0,
+        "sold": 0,
+        "totalSeats": 92,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 0.0
+      }
+    ],
+    "Language_details": [
+      {
+        "language": "Gujarati",
+        "venues": 1,
+        "shows": 1,
+        "gross": 0.0,
+        "sold": 0,
+        "totalSeats": 92,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 0.0
+      }
+    ],
+    "Format_details": [
+      {
+        "dimension": "2D",
+        "venues": 1,
+        "shows": 1,
+        "gross": 0.0,
+        "sold": 0,
+        "totalSeats": 92,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 0.0
       }
     ]
   },
