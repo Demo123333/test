@@ -159,15 +159,15 @@
     ]
   },
   "The Raja Saab": {
-    "shows": 208,
-    "gross": 262327.0,
-    "sold": 923,
-    "totalSeats": 71657,
-    "venues": 53,
-    "cities": 37,
+    "shows": 209,
+    "gross": 272337.0,
+    "sold": 1033,
+    "totalSeats": 72145,
+    "venues": 54,
+    "cities": 38,
     "fastfilling": 0,
     "housefull": 0,
-    "occupancy": 1.29,
+    "occupancy": 1.43,
     "City_details": [
       {
         "city": "Basti",
@@ -186,12 +186,24 @@
         "state": "Andhra Pradesh",
         "venues": 2,
         "shows": 8,
-        "gross": 44847.0,
-        "sold": 151,
+        "gross": 38907.0,
+        "sold": 131,
         "totalSeats": 2972,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 5.08
+        "occupancy": 4.41
+      },
+      {
+        "city": "Tindivanam",
+        "state": "Tamil Nadu",
+        "venues": 1,
+        "shows": 1,
+        "gross": 12700.0,
+        "sold": 118,
+        "totalSeats": 488,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 24.18
       },
       {
         "city": "Rishikesh",
@@ -378,12 +390,12 @@
         "state": "Uttar Pradesh",
         "venues": 2,
         "shows": 8,
-        "gross": 0.0,
-        "sold": 0,
+        "gross": 300.0,
+        "sold": 2,
         "totalSeats": 21008,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 0.0
+        "occupancy": 0.01
       },
       {
         "city": "Janjgir",
@@ -582,12 +594,12 @@
         "state": "Andhra Pradesh",
         "venues": 2,
         "shows": 8,
-        "gross": 217480.0,
-        "sold": 772,
+        "gross": 220430.0,
+        "sold": 782,
         "totalSeats": 3632,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 21.26
+        "occupancy": 21.53
       },
       {
         "city": "Siliguri",
@@ -619,8 +631,8 @@
         "language": "Hindi",
         "venues": 44,
         "shows": 168,
-        "gross": 0.0,
-        "sold": 0,
+        "gross": 300.0,
+        "sold": 2,
         "totalSeats": 61317,
         "fastfilling": 0,
         "housefull": 0,
@@ -630,12 +642,23 @@
         "language": "Telugu",
         "venues": 10,
         "shows": 38,
-        "gross": 262327.0,
-        "sold": 923,
+        "gross": 259337.0,
+        "sold": 913,
         "totalSeats": 10200,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 9.05
+        "occupancy": 8.95
+      },
+      {
+        "language": "Tamil",
+        "venues": 1,
+        "shows": 1,
+        "gross": 12700.0,
+        "sold": 118,
+        "totalSeats": 488,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 24.18
       },
       {
         "language": "Kannada",
@@ -652,14 +675,89 @@
     "Format_details": [
       {
         "dimension": "2D",
-        "venues": 53,
-        "shows": 208,
-        "gross": 262327.0,
-        "sold": 923,
-        "totalSeats": 71657,
+        "venues": 54,
+        "shows": 209,
+        "gross": 272337.0,
+        "sold": 1033,
+        "totalSeats": 72145,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 1.29
+        "occupancy": 1.43
+      }
+    ]
+  },
+  "Parasakthi": {
+    "shows": 12,
+    "gross": 89680.0,
+    "sold": 472,
+    "totalSeats": 5332,
+    "venues": 3,
+    "cities": 3,
+    "fastfilling": 0,
+    "housefull": 0,
+    "occupancy": 8.85,
+    "City_details": [
+      {
+        "city": "Kozhinjampara",
+        "state": "Kerala",
+        "venues": 1,
+        "shows": 4,
+        "gross": 0.0,
+        "sold": 0,
+        "totalSeats": 924,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 0.0
+      },
+      {
+        "city": "Tindivanam",
+        "state": "Tamil Nadu",
+        "venues": 1,
+        "shows": 4,
+        "gross": 89680.0,
+        "sold": 472,
+        "totalSeats": 1952,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 24.18
+      },
+      {
+        "city": "Cumbum",
+        "state": "Tamil Nadu",
+        "venues": 1,
+        "shows": 4,
+        "gross": 0.0,
+        "sold": 0,
+        "totalSeats": 2456,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 0.0
+      }
+    ],
+    "Language_details": [
+      {
+        "language": "Tamil",
+        "venues": 3,
+        "shows": 12,
+        "gross": 89680.0,
+        "sold": 472,
+        "totalSeats": 5332,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 8.85
+      }
+    ],
+    "Format_details": [
+      {
+        "dimension": "2D",
+        "venues": 3,
+        "shows": 12,
+        "gross": 89680.0,
+        "sold": 472,
+        "totalSeats": 5332,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 8.85
       }
     ]
   },
@@ -1071,57 +1169,6 @@
         "gross": 0.0,
         "sold": 0,
         "totalSeats": 4518,
-        "fastfilling": 0,
-        "housefull": 0,
-        "occupancy": 0.0
-      }
-    ]
-  },
-  "Parasakthi": {
-    "shows": 4,
-    "gross": 0.0,
-    "sold": 0,
-    "totalSeats": 2456,
-    "venues": 1,
-    "cities": 1,
-    "fastfilling": 0,
-    "housefull": 0,
-    "occupancy": 0.0,
-    "City_details": [
-      {
-        "city": "Cumbum",
-        "state": "Tamil Nadu",
-        "venues": 1,
-        "shows": 4,
-        "gross": 0.0,
-        "sold": 0,
-        "totalSeats": 2456,
-        "fastfilling": 0,
-        "housefull": 0,
-        "occupancy": 0.0
-      }
-    ],
-    "Language_details": [
-      {
-        "language": "Tamil",
-        "venues": 1,
-        "shows": 4,
-        "gross": 0.0,
-        "sold": 0,
-        "totalSeats": 2456,
-        "fastfilling": 0,
-        "housefull": 0,
-        "occupancy": 0.0
-      }
-    ],
-    "Format_details": [
-      {
-        "dimension": "2D",
-        "venues": 1,
-        "shows": 4,
-        "gross": 0.0,
-        "sold": 0,
-        "totalSeats": 2456,
         "fastfilling": 0,
         "housefull": 0,
         "occupancy": 0.0
