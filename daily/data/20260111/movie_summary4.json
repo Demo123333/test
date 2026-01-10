@@ -1,52 +1,88 @@
 {
-  "Dhurandhar": {
-    "shows": 1,
-    "gross": 260.0,
-    "sold": 1,
-    "totalSeats": 98,
-    "venues": 1,
-    "cities": 1,
+  "The Raja Saab": {
+    "shows": 5,
+    "gross": 120580.0,
+    "sold": 508,
+    "totalSeats": 2311,
+    "venues": 5,
+    "cities": 4,
     "fastfilling": 0,
     "housefull": 0,
-    "occupancy": 1.02,
+    "occupancy": 21.98,
     "City_details": [
+      {
+        "city": "Hyderabad",
+        "state": "Telangana",
+        "venues": 2,
+        "shows": 2,
+        "gross": 109150.0,
+        "sold": 432,
+        "totalSeats": 1351,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 31.98
+      },
+      {
+        "city": "Navi Mumbai",
+        "state": "Maharashtra",
+        "venues": 1,
+        "shows": 1,
+        "gross": 760.0,
+        "sold": 4,
+        "totalSeats": 239,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 1.67
+      },
+      {
+        "city": "Jalgaon",
+        "state": "Maharashtra",
+        "venues": 1,
+        "shows": 1,
+        "gross": 1820.0,
+        "sold": 13,
+        "totalSeats": 465,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 2.8
+      },
       {
         "city": "Jalandhar",
         "state": "Punjab",
         "venues": 1,
         "shows": 1,
-        "gross": 260.0,
-        "sold": 1,
-        "totalSeats": 98,
+        "gross": 8850.0,
+        "sold": 59,
+        "totalSeats": 256,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 1.02
+        "occupancy": 23.05
       }
     ],
     "Language_details": [
       {
-        "language": "Hindi",
-        "venues": 1,
-        "shows": 1,
-        "gross": 260.0,
-        "sold": 1,
-        "totalSeats": 98,
+        "language": "Telugu",
+        "venues": 5,
+        "shows": 5,
+        "gross": 120580.0,
+        "sold": 508,
+        "totalSeats": 2311,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 1.02
+        "occupancy": 21.98
       }
     ],
     "Format_details": [
       {
         "dimension": "2D",
-        "venues": 1,
-        "shows": 1,
-        "gross": 260.0,
-        "sold": 1,
-        "totalSeats": 98,
+        "venues": 5,
+        "shows": 5,
+        "gross": 120580.0,
+        "sold": 508,
+        "totalSeats": 2311,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 1.02
+        "occupancy": 21.98
       }
     ]
   },
@@ -101,41 +137,41 @@
       }
     ]
   },
-  "The Raja Saab": {
+  "Shambhala": {
     "shows": 1,
-    "gross": 8850.0,
-    "sold": 59,
-    "totalSeats": 256,
+    "gross": 5000.0,
+    "sold": 50,
+    "totalSeats": 197,
     "venues": 1,
     "cities": 1,
     "fastfilling": 0,
     "housefull": 0,
-    "occupancy": 23.05,
+    "occupancy": 25.38,
     "City_details": [
       {
         "city": "Jalandhar",
         "state": "Punjab",
         "venues": 1,
         "shows": 1,
-        "gross": 8850.0,
-        "sold": 59,
-        "totalSeats": 256,
+        "gross": 5000.0,
+        "sold": 50,
+        "totalSeats": 197,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 23.05
+        "occupancy": 25.38
       }
     ],
     "Language_details": [
       {
-        "language": "Telugu",
+        "language": "Hindi",
         "venues": 1,
         "shows": 1,
-        "gross": 8850.0,
-        "sold": 59,
-        "totalSeats": 256,
+        "gross": 5000.0,
+        "sold": 50,
+        "totalSeats": 197,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 23.05
+        "occupancy": 25.38
       }
     ],
     "Format_details": [
@@ -143,12 +179,63 @@
         "dimension": "2D",
         "venues": 1,
         "shows": 1,
-        "gross": 8850.0,
-        "sold": 59,
-        "totalSeats": 256,
+        "gross": 5000.0,
+        "sold": 50,
+        "totalSeats": 197,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 23.05
+        "occupancy": 25.38
+      }
+    ]
+  },
+  "Dhurandhar": {
+    "shows": 1,
+    "gross": 260.0,
+    "sold": 1,
+    "totalSeats": 98,
+    "venues": 1,
+    "cities": 1,
+    "fastfilling": 0,
+    "housefull": 0,
+    "occupancy": 1.02,
+    "City_details": [
+      {
+        "city": "Jalandhar",
+        "state": "Punjab",
+        "venues": 1,
+        "shows": 1,
+        "gross": 260.0,
+        "sold": 1,
+        "totalSeats": 98,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 1.02
+      }
+    ],
+    "Language_details": [
+      {
+        "language": "Hindi",
+        "venues": 1,
+        "shows": 1,
+        "gross": 260.0,
+        "sold": 1,
+        "totalSeats": 98,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 1.02
+      }
+    ],
+    "Format_details": [
+      {
+        "dimension": "2D",
+        "venues": 1,
+        "shows": 1,
+        "gross": 260.0,
+        "sold": 1,
+        "totalSeats": 98,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 1.02
       }
     ]
   }
