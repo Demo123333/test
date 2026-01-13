@@ -1,14 +1,14 @@
 {
   "The Raja Saab": {
     "shows": 18,
-    "gross": 0.0,
-    "sold": 0,
-    "totalSeats": 8858,
+    "gross": 6000.0,
+    "sold": 24,
+    "totalSeats": 8154,
     "venues": 5,
     "cities": 5,
     "fastfilling": 0,
     "housefull": 0,
-    "occupancy": 0.0,
+    "occupancy": 0.29,
     "City_details": [
       {
         "city": "Madhira",
@@ -39,12 +39,12 @@
         "state": "Andhra Pradesh",
         "venues": 1,
         "shows": 4,
-        "gross": 0.0,
-        "sold": 0,
-        "totalSeats": 4368,
+        "gross": 6000.0,
+        "sold": 24,
+        "totalSeats": 3664,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 0.0
+        "occupancy": 0.66
       },
       {
         "city": "Narayankhed",
@@ -76,12 +76,12 @@
         "language": "Telugu",
         "venues": 5,
         "shows": 18,
-        "gross": 0.0,
-        "sold": 0,
-        "totalSeats": 8858,
+        "gross": 6000.0,
+        "sold": 24,
+        "totalSeats": 8154,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 0.0
+        "occupancy": 0.29
       }
     ],
     "Format_details": [
@@ -89,25 +89,100 @@
         "dimension": "2D",
         "venues": 5,
         "shows": 18,
+        "gross": 6000.0,
+        "sold": 24,
+        "totalSeats": 8154,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 0.29
+      }
+    ]
+  },
+  "Vaa Vaathiyaar": {
+    "shows": 12,
+    "gross": 30240.0,
+    "sold": 252,
+    "totalSeats": 4332,
+    "venues": 3,
+    "cities": 3,
+    "fastfilling": 0,
+    "housefull": 0,
+    "occupancy": 5.82,
+    "City_details": [
+      {
+        "city": "Pollachi",
+        "state": "Tamil Nadu",
+        "venues": 1,
+        "shows": 4,
         "gross": 0.0,
         "sold": 0,
-        "totalSeats": 8858,
+        "totalSeats": 1904,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 0.0
+      },
+      {
+        "city": "Aravakurichi",
+        "state": "Tamil Nadu",
+        "venues": 1,
+        "shows": 4,
+        "gross": 30240.0,
+        "sold": 252,
+        "totalSeats": 1228,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 20.52
+      },
+      {
+        "city": "Pondicherry",
+        "state": "Tamil Nadu",
+        "venues": 1,
+        "shows": 4,
+        "gross": 0.0,
+        "sold": 0,
+        "totalSeats": 1200,
         "fastfilling": 0,
         "housefull": 0,
         "occupancy": 0.0
       }
+    ],
+    "Language_details": [
+      {
+        "language": "Tamil",
+        "venues": 3,
+        "shows": 12,
+        "gross": 30240.0,
+        "sold": 252,
+        "totalSeats": 4332,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 5.82
+      }
+    ],
+    "Format_details": [
+      {
+        "dimension": "2D",
+        "venues": 3,
+        "shows": 12,
+        "gross": 30240.0,
+        "sold": 252,
+        "totalSeats": 4332,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 5.82
+      }
     ]
   },
   "Mana Shankara Vara Prasad Garu": {
-    "shows": 22,
-    "gross": 228095.0,
-    "sold": 2112,
-    "totalSeats": 8657,
-    "venues": 6,
-    "cities": 6,
-    "fastfilling": 3,
+    "shows": 26,
+    "gross": 245135.0,
+    "sold": 2507,
+    "totalSeats": 9372,
+    "venues": 7,
+    "cities": 7,
+    "fastfilling": 4,
     "housefull": 0,
-    "occupancy": 24.4,
+    "occupancy": 26.75,
     "City_details": [
       {
         "city": "Nakrekal",
@@ -126,24 +201,36 @@
         "state": "Andhra Pradesh",
         "venues": 1,
         "shows": 5,
-        "gross": 135400.0,
-        "sold": 677,
+        "gross": 138400.0,
+        "sold": 692,
         "totalSeats": 2055,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 32.94
+        "occupancy": 33.67
       },
       {
         "city": "Kakinada",
         "state": "Andhra Pradesh",
         "venues": 1,
         "shows": 1,
-        "gross": 18245.0,
-        "sold": 83,
+        "gross": 24085.0,
+        "sold": 108,
         "totalSeats": 445,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 18.65
+        "occupancy": 24.27
+      },
+      {
+        "city": "Hasanparthy",
+        "state": "Telangana",
+        "venues": 1,
+        "shows": 4,
+        "gross": 0.0,
+        "sold": 0,
+        "totalSeats": 1400,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 0.0
       },
       {
         "city": "Dharmavaram",
@@ -151,137 +238,86 @@
         "venues": 1,
         "shows": 4,
         "gross": 0.0,
-        "sold": 968,
-        "totalSeats": 1935,
-        "fastfilling": 3,
+        "sold": 1289,
+        "totalSeats": 1932,
+        "fastfilling": 4,
         "housefull": 0,
-        "occupancy": 50.03
+        "occupancy": 66.72
       },
       {
         "city": "Machilipatnam",
         "state": "Andhra Pradesh",
         "venues": 1,
         "shows": 4,
-        "gross": 47600.0,
-        "sold": 207,
-        "totalSeats": 2178,
+        "gross": 56100.0,
+        "sold": 243,
+        "totalSeats": 1496,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 9.5
+        "occupancy": 16.24
       },
       {
         "city": "Kankipadu",
         "state": "Andhra Pradesh",
         "venues": 1,
         "shows": 4,
-        "gross": 26850.0,
-        "sold": 177,
+        "gross": 26550.0,
+        "sold": 175,
         "totalSeats": 1564,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 11.32
+        "occupancy": 11.19
       }
     ],
     "Language_details": [
       {
         "language": "Telugu",
-        "venues": 6,
-        "shows": 22,
-        "gross": 228095.0,
-        "sold": 2112,
-        "totalSeats": 8657,
-        "fastfilling": 3,
+        "venues": 7,
+        "shows": 26,
+        "gross": 245135.0,
+        "sold": 2507,
+        "totalSeats": 9372,
+        "fastfilling": 4,
         "housefull": 0,
-        "occupancy": 24.4
+        "occupancy": 26.75
       }
     ],
     "Format_details": [
       {
         "dimension": "2D",
-        "venues": 6,
-        "shows": 22,
-        "gross": 228095.0,
-        "sold": 2112,
-        "totalSeats": 8657,
-        "fastfilling": 3,
+        "venues": 7,
+        "shows": 26,
+        "gross": 245135.0,
+        "sold": 2507,
+        "totalSeats": 9372,
+        "fastfilling": 4,
         "housefull": 0,
-        "occupancy": 24.4
-      }
-    ]
-  },
-  "Vaa Vaathiyaar": {
-    "shows": 4,
-    "gross": 30240.0,
-    "sold": 252,
-    "totalSeats": 1228,
-    "venues": 1,
-    "cities": 1,
-    "fastfilling": 0,
-    "housefull": 0,
-    "occupancy": 20.52,
-    "City_details": [
-      {
-        "city": "Aravakurichi",
-        "state": "Tamil Nadu",
-        "venues": 1,
-        "shows": 4,
-        "gross": 30240.0,
-        "sold": 252,
-        "totalSeats": 1228,
-        "fastfilling": 0,
-        "housefull": 0,
-        "occupancy": 20.52
-      }
-    ],
-    "Language_details": [
-      {
-        "language": "Tamil",
-        "venues": 1,
-        "shows": 4,
-        "gross": 30240.0,
-        "sold": 252,
-        "totalSeats": 1228,
-        "fastfilling": 0,
-        "housefull": 0,
-        "occupancy": 20.52
-      }
-    ],
-    "Format_details": [
-      {
-        "dimension": "2D",
-        "venues": 1,
-        "shows": 4,
-        "gross": 30240.0,
-        "sold": 252,
-        "totalSeats": 1228,
-        "fastfilling": 0,
-        "housefull": 0,
-        "occupancy": 20.52
+        "occupancy": 26.75
       }
     ]
   },
   "Bhartha Mahasayulaku Wignyapthi": {
     "shows": 8,
-    "gross": 23200.0,
-    "sold": 140,
+    "gross": 27200.0,
+    "sold": 160,
     "totalSeats": 1692,
     "venues": 2,
     "cities": 2,
     "fastfilling": 0,
     "housefull": 0,
-    "occupancy": 8.27,
+    "occupancy": 9.46,
     "City_details": [
       {
         "city": "Dharmavaram",
         "state": "Andhra Pradesh",
         "venues": 1,
         "shows": 4,
-        "gross": 12000.0,
-        "sold": 60,
+        "gross": 16000.0,
+        "sold": 80,
         "totalSeats": 944,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 6.36
+        "occupancy": 8.47
       },
       {
         "city": "Kankipadu",
@@ -301,12 +337,12 @@
         "language": "Telugu",
         "venues": 2,
         "shows": 8,
-        "gross": 23200.0,
-        "sold": 140,
+        "gross": 27200.0,
+        "sold": 160,
         "totalSeats": 1692,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 8.27
+        "occupancy": 9.46
       }
     ],
     "Format_details": [
@@ -314,63 +350,75 @@
         "dimension": "2D",
         "venues": 2,
         "shows": 8,
-        "gross": 23200.0,
-        "sold": 140,
+        "gross": 27200.0,
+        "sold": 160,
         "totalSeats": 1692,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 8.27
+        "occupancy": 9.46
       }
     ]
   },
   "Parasakthi": {
-    "shows": 12,
-    "gross": 128262.44,
-    "sold": 734,
-    "totalSeats": 6796,
-    "venues": 3,
-    "cities": 1,
+    "shows": 20,
+    "gross": 142542.44,
+    "sold": 842,
+    "totalSeats": 9080,
+    "venues": 5,
+    "cities": 2,
     "fastfilling": 0,
     "housefull": 0,
-    "occupancy": 10.8,
+    "occupancy": 9.27,
     "City_details": [
       {
         "city": "Madurai",
         "state": "Tamil Nadu",
-        "venues": 3,
-        "shows": 12,
-        "gross": 128262.44,
-        "sold": 734,
-        "totalSeats": 6796,
+        "venues": 4,
+        "shows": 16,
+        "gross": 129022.44,
+        "sold": 738,
+        "totalSeats": 8036,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 10.8
+        "occupancy": 9.18
+      },
+      {
+        "city": "Pondicherry",
+        "state": "Tamil Nadu",
+        "venues": 1,
+        "shows": 4,
+        "gross": 13520.0,
+        "sold": 104,
+        "totalSeats": 1044,
+        "fastfilling": 0,
+        "housefull": 0,
+        "occupancy": 9.96
       }
     ],
     "Language_details": [
       {
         "language": "Tamil",
-        "venues": 3,
-        "shows": 12,
-        "gross": 128262.44,
-        "sold": 734,
-        "totalSeats": 6796,
+        "venues": 5,
+        "shows": 20,
+        "gross": 142542.44,
+        "sold": 842,
+        "totalSeats": 9080,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 10.8
+        "occupancy": 9.27
       }
     ],
     "Format_details": [
       {
         "dimension": "2D",
-        "venues": 3,
-        "shows": 12,
-        "gross": 128262.44,
-        "sold": 734,
-        "totalSeats": 6796,
+        "venues": 5,
+        "shows": 20,
+        "gross": 142542.44,
+        "sold": 842,
+        "totalSeats": 9080,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 10.8
+        "occupancy": 9.27
       }
     ]
   },
@@ -529,26 +577,26 @@
   },
   "Anaganaga Oka Raju": {
     "shows": 2,
-    "gross": 0.0,
-    "sold": 0,
+    "gross": 300.0,
+    "sold": 2,
     "totalSeats": 230,
     "venues": 1,
     "cities": 1,
     "fastfilling": 0,
     "housefull": 0,
-    "occupancy": 0.0,
+    "occupancy": 0.87,
     "City_details": [
       {
         "city": "Ichchapuram",
         "state": "Andhra Pradesh",
         "venues": 1,
         "shows": 2,
-        "gross": 0.0,
-        "sold": 0,
+        "gross": 300.0,
+        "sold": 2,
         "totalSeats": 230,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 0.0
+        "occupancy": 0.87
       }
     ],
     "Language_details": [
@@ -556,12 +604,12 @@
         "language": "Telugu",
         "venues": 1,
         "shows": 2,
-        "gross": 0.0,
-        "sold": 0,
+        "gross": 300.0,
+        "sold": 2,
         "totalSeats": 230,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 0.0
+        "occupancy": 0.87
       }
     ],
     "Format_details": [
@@ -569,12 +617,12 @@
         "dimension": "2D",
         "venues": 1,
         "shows": 2,
-        "gross": 0.0,
-        "sold": 0,
+        "gross": 300.0,
+        "sold": 2,
         "totalSeats": 230,
         "fastfilling": 0,
         "housefull": 0,
-        "occupancy": 0.0
+        "occupancy": 0.87
       }
     ]
   }
